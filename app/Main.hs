@@ -32,6 +32,5 @@ main = run 8003 app
       kind  <- choice ["Setson", "cowboy", "beanie"]
       pure $ Hat inches color kind
 
-
 choice :: MonadIO m => NonEmpty a -> m a
 choice fs = (fs !!) <$> liftIO (randomRIO (0, pred (length fs)))
