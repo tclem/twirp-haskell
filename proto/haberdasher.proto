@@ -20,3 +20,17 @@ message Hat {
   string color = 2; // anything but "invisible"
   string name = 3; // i.e. "bowler"
 }
+
+message Bill {
+  Price price = 1;
+  BillingStatus status = 2;
+  enum BillingStatus {
+    UN_PAID = 0;
+    PAID = 1;
+  }
+}
+
+message Price {
+  uint32 dollars = 1;
+  uint32 cents = 2;
+}
