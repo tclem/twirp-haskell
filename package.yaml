@@ -1,0 +1,70 @@
+name:                twirp
+version:             0.1.0.0
+github:              "tclem/twirp"
+license:             BSD3
+author:              "Timothy Clem"
+maintainer:          "timothy.clem@gmail.com"
+copyright:           "2019 Timothy Clem"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+description: Please see the README on GitHub at <https://github.com/tclem/twirp#readme>
+
+dependencies:
+- aeson
+- base >= 4.7 && < 5
+- bytestring
+- http-media
+- proto3-suite
+- proto3-wire
+- random
+- servant
+- servant-server
+- text
+- wai
+- warp
+
+default-extensions:
+- DataKinds
+- DeriveFoldable
+- DeriveFunctor
+- DeriveGeneric
+- DeriveTraversable
+- FlexibleContexts
+- FlexibleInstances
+- MultiParamTypeClasses
+- OverloadedStrings
+- RecordWildCards
+- StandaloneDeriving
+- StrictData
+- TypeApplications
+
+library:
+  source-dirs: src
+
+executables:
+  twirp-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - twirp
+
+tests:
+  twirp-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - twirp

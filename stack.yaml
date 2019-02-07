@@ -1,0 +1,11 @@
+resolver: lts-13.6
+packages:
+- .
+- location:
+    git: https://github.com/joshvera/proto3-suite
+    commit: 36e5fb7a03b17333d9c5903ad3b5aeb89262f5bc
+  extra-dep: true
+- location:
+    git: https://github.com/joshvera/proto3-wire
+    commit: 84664e22f01beb67870368f1f88ada5d0ad01f56
+  extra-dep: true

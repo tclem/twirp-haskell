@@ -1,0 +1,3 @@
+#!/bin/bash
+
+go run protoc-gen-twirp_haskell/main.go protoc-gen-twirp_haskell/version.go
