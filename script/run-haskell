@@ -1,0 +1,3 @@
+#!/bin/bash
+
+go run protoc-gen-haskell/main.go protoc-gen-haskell/version.go
