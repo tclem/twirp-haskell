@@ -58,7 +58,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "{-# LANGUAGE TypeOperators #-}")
 
 	pkgName := file.GetPackage()
-	moduleName := toModuleName(pkgName)
+	moduleName := toModuleName(file)
 	print(b, "module %s where", moduleName)
 	print(b, "")
 
@@ -74,8 +74,8 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 		services = append(services, fmt.Sprintf("\"twirp\" :> \"%s.%s\" :> %sService headers", pkgName, n, n))
 	}
 	apis := strings.Join(services, "\n  :<|> ")
+	apiName := packageType(filePath(file))
 
-	apiName := packageFileName(filePath(file))
 	print(b, "type %sAPI headers\n  =    %s", apiName, apis)
 
 	for _, service := range file.Service {
@@ -134,21 +134,49 @@ func filePath(f *descriptor.FileDescriptorProto) string {
 	return *f.Name
 }
 
-func onlyBase(path string) string {
-	return filepath.Base(path)
+func packageType(path string) string {
+	ext := filepath.Ext(path)
+	path = strings.TrimSuffix(filepath.Base(path), ext)
+	return pascalCase(path)
 }
 
 func packageFileName(path string) string {
 	ext := filepath.Ext(path)
-	return strings.Title(strings.TrimSuffix(path, ext))
+	return pascalCase(strings.TrimSuffix(path, ext))
 }
 
-func toModuleName(pkgName string) string {
+func toModuleName(file *descriptor.FileDescriptorProto) string {
+	pkgName := file.GetPackage()
 	parts := []string{}
 	for _, p := range strings.Split(pkgName, ".") {
-		parts = append(parts, strings.Title(p))
+		parts = append(parts, capitalize(p))
 	}
+
+	apiName := packageType(filePath(file))
+	parts = append(parts, apiName)
+
 	return strings.Join(parts, ".")
+}
+
+// capitalize, with exceptions for common abbreviations
+func capitalize(s string) string {
+	return strings.Title(strings.ToLower(s))
+	// s = strings.ToLower(s)
+	// switch s {
+	// case "api":
+	// 	return "API"
+	// default:
+	// 	return strings.Title(s)
+	// }
+}
+
+// snake_case to PascalCase.
+func pascalCase(s string) string {
+	parts := []string{}
+	for _, x := range strings.Split(s, "_") {
+		parts = append(parts, capitalize(x))
+	}
+	return strings.Join(parts, "")
 }
 
 func Fail(msgs ...string) {
