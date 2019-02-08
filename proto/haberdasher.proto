@@ -24,6 +24,12 @@ message Hat {
 message Bill {
   Price price = 1;
   BillingStatus status = 2;
+
+  oneof extra {
+    string vat_info = 3;
+    string zip_code = 4;
+  }
+
   enum BillingStatus {
     UN_PAID = 0;
     PAID = 1;

@@ -80,21 +80,38 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 }
 
 func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
+	oneofs := []string{}
+	for _, oneof := range message.OneofDecl {
+		generateOneof(b, message, oneof)
+		oneofs = append(oneofs, oneof.GetName())
+	}
+
 	n := message.GetName()
 	print(b, "")
 	print(b, "data %s = %s", n, n)
 	first := true
 	for _, field := range message.Field {
-		n := field.GetName()
+		n := toHaskellFieldName(field.GetName())
 		t := toType(field)
+		if field.OneofIndex == nil {
+			sep := ","
+			if first {
+				sep = "{"
+			}
+			print(b, "  %s %s :: %s", sep, n, t)
+			first = false
+		}
+	}
+	for _, n := range oneofs {
+		t := fmt.Sprintf("%s%s", strings.Title(message.GetName()), strings.Title(n))
 		sep := ","
 		if first {
 			sep = "{"
 		}
-		print(b, "  %s %s :: %s", sep, n, t)
+		print(b, "  %s %s :: Maybe %s", sep, n, t)
 		first = false
 	}
-	print(b, "  } deriving stock (Eq, Show, Generic)")
+	print(b, "  } deriving stock (Eq, Ord, Show, Generic)")
 	print(b, "    deriving anyclass (Message, Named, FromJSON, ToJSON)")
 
 	for _, nested := range message.NestedType {
@@ -105,6 +122,29 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	}
 }
 
+func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *descriptor.OneofDescriptorProto) {
+	oneofName := oneof.GetName()
+	n := fmt.Sprintf("%s%s", strings.Title(message.GetName()), strings.Title(oneofName))
+	print(b, "")
+	print(b, "data %s", n)
+	first := true
+	for _, field := range message.Field {
+		fieldName := toHaskellFieldName(field.GetName())
+		n := enumToHaskellSumType(field.GetName())
+		t := toType(field)
+		if field.OneofIndex != nil {
+			sep := "|"
+			if first {
+				sep = "="
+			}
+			print(b, "  %s %s { %s :: %s }", sep, n, fieldName, t)
+			first = false
+		}
+	}
+	print(b, "  deriving stock (Eq, Ord, Show, Generic)")
+	print(b, "  deriving anyclass (Message, Named, FromJSON, ToJSON)")
+}
+
 func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 	n := enum.GetName()
 	print(b, "")
@@ -112,11 +152,11 @@ func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 	first := true
 	def := ""
 	for _, value := range enum.Value {
-		v := toHaskellSumType(value.GetName())
-		def = v
+		v := enumToHaskellSumType(value.GetName())
 		sep := "|"
 		if first {
 			sep = "="
+			def = v
 		}
 		print(b, "  %s %s", sep, v)
 		first = false
@@ -129,6 +169,7 @@ func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 	}
 }
 
+// Reference: https://github.com/golang/protobuf/blob/c823c79ea1570fb5ff454033735a8e68575d1d0f/protoc-gen-go/descriptor/descriptor.proto#L136
 func toType(field *descriptor.FieldDescriptorProto) string {
 	label := field.GetLabel()
 	res := ""
