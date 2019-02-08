@@ -7,6 +7,13 @@ option go_package = "haberdasher";
 service Haberdasher {
   // MakeHat produces a hat of mysterious, randomly-selected color!
   rpc MakeHat (Size) returns (Hat);
+  // Get paid
+  rpc GetBill (Hat) returns (Bill);
+}
+
+// Health check service
+service Health {
+  rpc Check (Ping) returns (Pong);
 }
 
 // Size of a Hat, in inches.
@@ -39,4 +46,12 @@ message Bill {
 message Price {
   uint32 dollars = 1;
   uint32 cents = 2;
+}
+
+message Ping {
+  string service = 1;
+}
+
+message Pong {
+  string status = 1;
 }

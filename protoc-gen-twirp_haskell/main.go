@@ -1,3 +1,5 @@
+// Generate Haskell Twirp Services based on the Servant web framework.
+//
 // This code is heavily inspired by:
 // https://github.com/twitchtv/twirp-ruby/blob/master/protoc-gen-twirp_ruby/main.go
 // which is licensed under the Apache License, Version 2.0.
@@ -69,12 +71,12 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	services := []string{}
 	for _, service := range file.Service {
 		n := service.GetName()
-		services = append(services, fmt.Sprintf("\"%s.%s\" :> %sService headers", pkgName, n, n))
+		services = append(services, fmt.Sprintf("\"twirp\" :> \"%s.%s\" :> %sService headers", pkgName, n, n))
 	}
 	apis := strings.Join(services, "\n  :<|> ")
 
 	apiName := packageFileName(filePath(file))
-	print(b, "type %sAPI headers\n  = \"twirp\" :> %s", apiName, apis)
+	print(b, "type %sAPI headers\n  =    %s", apiName, apis)
 
 	for _, service := range file.Service {
 		name := service.GetName()
@@ -88,7 +90,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 			methods = append(methods, fmt.Sprintf("\"%s\" :> headers :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", n, in, out))
 		}
 
-		print(b, "type %sService headers\n  = %s", name, strings.Join(methods, " \n  :<|> "))
+		print(b, "type %sService headers\n  =    %s", name, strings.Join(methods, " \n  :<|> "))
 	}
 
 	return b.String()

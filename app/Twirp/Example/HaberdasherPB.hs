@@ -50,3 +50,13 @@ data Price = Price
   , cents :: Word32
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Message, Named, FromJSON, ToJSON)
+
+data Ping = Ping
+  { service :: Text
+  } deriving stock (Eq, Ord, Show, Generic)
+    deriving anyclass (Message, Named, FromJSON, ToJSON)
+
+data Pong = Pong
+  { status :: Text
+  } deriving stock (Eq, Ord, Show, Generic)
+    deriving anyclass (Message, Named, FromJSON, ToJSON)

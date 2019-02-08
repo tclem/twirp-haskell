@@ -8,7 +8,12 @@ import Twirp
 import Twirp.Example.HaberdasherPB
 
 type HaberdasherAPI headers
-  = "twirp" :> "twirp.example.haberdasher.Haberdasher" :> HaberdasherService headers
+  =    "twirp" :> "twirp.example.haberdasher.Haberdasher" :> HaberdasherService headers
+  :<|> "twirp" :> "twirp.example.haberdasher.Health" :> HealthService headers
 
 type HaberdasherService headers
-  = "MakeHat" :> headers :> ReqBody [Protobuf, JSON] Size :> Post '[Protobuf, JSON] Hat
+  =    "MakeHat" :> headers :> ReqBody [Protobuf, JSON] Size :> Post '[Protobuf, JSON] Hat 
+  :<|> "GetBill" :> headers :> ReqBody [Protobuf, JSON] Hat :> Post '[Protobuf, JSON] Bill
+
+type HealthService headers
+  =    "Check" :> headers :> ReqBody [Protobuf, JSON] Ping :> Post '[Protobuf, JSON] Pong

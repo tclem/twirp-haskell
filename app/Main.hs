@@ -28,13 +28,27 @@ apiApp :: Application
 apiApp = serve (Proxy :: Proxy API) server
 
 server :: Server API
-server = makeHat
+server = (makeHat :<|> getBill) :<|> checkHealth
+  where
 
-makeHat :: Maybe RequestID -> Size -> Handler Hat
-makeHat _ Size{..} = do
-  color <- choice ["blue", "red", "white"]
-  kind  <- choice ["Setson", "cowboy", "beanie"]
-  pure $ Hat inches color kind
+    makeHat :: Maybe RequestID -> Size -> Handler Hat
+    makeHat _ Size{..} = do
+      color <- choice ["blue", "red", "white"]
+      kind  <- choice ["Setson", "cowboy", "beanie"]
+      pure $ Hat inches color kind
+
+    getBill :: Maybe RequestID -> Hat -> Handler Bill
+    getBill _ Hat{..} = do
+      price <- case color of
+                 "blue"  -> pure $ Price (10 * fromIntegral inches) 0
+                 "red"   -> pure $ Price (20 * fromIntegral inches) 0
+                 "white" -> pure $ Price (40 * fromIntegral inches) 0
+                 _       -> throwError (err400 { errBody = "Invalid hat color" })
+
+      pure $ Bill (Just price) UnPaid Nothing
+
+    checkHealth :: Maybe RequestID -> Ping -> Handler Pong
+    checkHealth _ _ = pure $ Pong "OK"
 
 choice :: MonadIO m => NonEmpty a -> m a
 choice fs = (fs !!) <$> liftIO (randomRIO (0, pred (length fs)))
