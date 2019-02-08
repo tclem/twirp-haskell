@@ -1,3 +1,5 @@
 #!/bin/bash
 
+cd "$(dirname "$0")/.."
+
 go run protoc-gen-twirp_haskell/main.go protoc-gen-twirp_haskell/version.go
