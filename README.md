@@ -128,7 +128,8 @@ data Pong = Pong
 Plugging this into an existing warp/wai server is straightforward. See `app/Main.hs` for the details:
 
 ``` haskell
-type API = HaberdasherAPI ExpectedHeaders
+type RequestID = String
+type API = HaberdasherAPI (Header "X-Request-Id" RequestID)
 
 main :: IO ()
 main = run 8003 app
