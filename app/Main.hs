@@ -10,8 +10,8 @@ import System.Random
 import Control.Monad.IO.Class
 import Data.List.NonEmpty (NonEmpty, (!!))
 
-import Twirp.Example.Haberdasher
-import Twirp.Example.HaberdasherPB
+import Twirp.Example.Haberdasher.Haberdasher
+import Twirp.Example.Haberdasher.HaberdasherPB
 
 type RequestID = String
 type ExpectedHeaders = Header "X-Request-Id" RequestID

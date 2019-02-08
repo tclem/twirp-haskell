@@ -7,8 +7,8 @@ set -e
 cd "$(dirname "$0")/.."
 
 protoc --proto_path=./proto \
-  --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./app/Twirp/Example \
-  --plugin=protoc-gen-haskell=./script/run-haskell --haskell_out=./app/Twirp/Example \
+  --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./app/Twirp/Example/Haberdasher \
+  --plugin=protoc-gen-haskell=./script/run-haskell --haskell_out=./app/Twirp/Example/Haberdasher \
   ./proto/haberdasher.proto
 
 # protoc --proto_path=../semantic/proto \
