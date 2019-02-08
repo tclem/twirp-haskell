@@ -3,7 +3,7 @@ packages:
 - .
 - location:
     git: https://github.com/joshvera/proto3-suite
-    commit: 36e5fb7a03b17333d9c5903ad3b5aeb89262f5bc
+    commit: cb98d55d4713bab1a6bca3cc7a33694f8780858c
   extra-dep: true
 - location:
     git: https://github.com/joshvera/proto3-wire
