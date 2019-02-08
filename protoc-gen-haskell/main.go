@@ -61,6 +61,8 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "")
 
 	print(b, "import Data.Aeson")
+	print(b, "import Data.ByteString (ByteString)")
+	print(b, "import Data.Fixed (Fixed)")
 	print(b, "import Data.Int")
 	print(b, "import Data.Text (Text)")
 	print(b, "import Data.Word")
@@ -139,12 +141,22 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 		res = "Int32"
 	case descriptor.FieldDescriptorProto_TYPE_SINT64:
 		res = "Int64"
+	case descriptor.FieldDescriptorProto_TYPE_SFIXED32:
+		res = "Fixed Int32"
+	case descriptor.FieldDescriptorProto_TYPE_SFIXED64:
+		res = "Fixed Int64"
 	case descriptor.FieldDescriptorProto_TYPE_UINT32:
 		res = "Word32"
 	case descriptor.FieldDescriptorProto_TYPE_UINT64:
 		res = "Word64"
+	case descriptor.FieldDescriptorProto_TYPE_FIXED32:
+		res = "Fixed Word32"
+	case descriptor.FieldDescriptorProto_TYPE_FIXED64:
+		res = "Fixed Word64"
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
-		res = "String"
+		res = "Text"
+	case descriptor.FieldDescriptorProto_TYPE_BYTES:
+		res = "ByteString"
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
 		res = "Bool"
 	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
@@ -152,21 +164,20 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
 		res = "Double"
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-		if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
-			res = fmt.Sprintf("[%s]", toHaskellType(field.GetTypeName()))
-		} else {
-			res = fmt.Sprintf("Maybe %s", toHaskellType(field.GetTypeName()))
-		}
+		res = toHaskellType(field.GetTypeName())
 	case descriptor.FieldDescriptorProto_TYPE_ENUM:
 		res = toHaskellType(field.GetTypeName())
 	default:
 		Fail(fmt.Sprintf("no mapping for type %s", field.GetType()))
 	}
-	return res
-}
 
-func toSumType(field *descriptor.FieldDescriptorProto) string {
-	return field.GetTypeName()
+	if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
+		res = fmt.Sprintf("[%s]", res)
+	} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+		res = fmt.Sprintf("Maybe %s", res)
+	}
+
+	return res
 }
 
 // .foo.Message => Message
@@ -186,10 +197,24 @@ func toHaskellType(s string) string {
 
 // Enums to Haskell sum types
 // ABOUT_FOO => AboutFoo
-func toHaskellSumType(s string) string {
+// SCREAMING_SNAKE_CASE to PascalCase.
+func enumToHaskellSumType(s string) string {
 	parts := []string{}
 	for _, x := range strings.Split(s, "_") {
 		parts = append(parts, strings.Title(strings.ToLower(x)))
+	}
+	return strings.Join(parts, "")
+}
+
+// snake_case to camelCase.
+func toHaskellFieldName(s string) string {
+	parts := []string{}
+	for i, x := range strings.Split(s, "_") {
+		if i == 0 {
+			parts = append(parts, strings.ToLower(x))
+		} else {
+			parts = append(parts, strings.Title(strings.ToLower(x)))
+		}
 	}
 	return strings.Join(parts, "")
 }
