@@ -14,23 +14,27 @@ import Twirp.Example.Haberdasher
 import Twirp.Example.HaberdasherPB
 
 type RequestID = String
-type ExpectedHeaders = Header "X-GitHub-Request-Id" RequestID
+type ExpectedHeaders = Header "X-Request-Id" RequestID
 
 type API = HaberdasherAPI ExpectedHeaders
 
 main :: IO ()
 main = run 8003 app
-  where
-    app = serve (Proxy :: Proxy API) server
 
-    server :: Server API
-    server = makeHat
+app :: Application
+app = twirpErrorResponses apiApp
 
-    makeHat :: Maybe RequestID -> Size -> Handler Hat
-    makeHat _ Size{..} = do
-      color <- choice ["blue", "red", "white"]
-      kind  <- choice ["Setson", "cowboy", "beanie"]
-      pure $ Hat inches color kind
+apiApp :: Application
+apiApp = serve (Proxy :: Proxy API) server
+
+server :: Server API
+server = makeHat
+
+makeHat :: Maybe RequestID -> Size -> Handler Hat
+makeHat _ Size{..} = do
+  color <- choice ["blue", "red", "white"]
+  kind  <- choice ["Setson", "cowboy", "beanie"]
+  pure $ Hat inches color kind
 
 choice :: MonadIO m => NonEmpty a -> m a
 choice fs = (fs !!) <$> liftIO (randomRIO (0, pred (length fs)))

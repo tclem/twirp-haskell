@@ -20,6 +20,7 @@ dependencies:
 - base >= 4.7 && < 5
 - bytestring
 - http-media
+- http-types
 - proto3-suite
 - proto3-wire
 - random

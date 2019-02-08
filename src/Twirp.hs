@@ -1,4 +1,9 @@
-module Twirp where
+module Twirp
+  ( Protobuf
+  , module Middleware
+  ) where
+
+import Twirp.Middleware.Errors as Middleware
 
 import Data.Bifunctor (first)
 import Data.ByteString.Lazy.Char8 as BC
