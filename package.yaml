@@ -48,6 +48,13 @@ default-extensions:
 library:
   source-dirs: src
 
+ghc-options:
+- -Wall
+- -Wcompat
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wredundant-constraints
+
 executables:
   twirp-exe:
     main:                Main.hs
