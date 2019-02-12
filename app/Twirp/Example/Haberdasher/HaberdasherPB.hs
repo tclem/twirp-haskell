@@ -5,24 +5,46 @@ module Twirp.Example.Haberdasher.HaberdasherPB where
 
 import Data.Aeson
 import Data.ByteString (ByteString)
-import Data.Fixed (Fixed)
 import Data.Int
 import Data.Text (Text)
+import Data.Vector (Vector)
 import Data.Word
 import GHC.Generics
 import Proto3.Suite
+import Proto3.Wire (at, oneof)
+import Twirp.Types()
 
 data Size = Size
   { inches :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Message, Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Size where
+  encodeMessage _ Size{..} = mconcat
+    [ encodeMessageField 1 inches
+    ]
+  decodeMessage _ = Size
+    <$> at decodeMessageField 1
+  dotProto = undefined
 
 data Hat = Hat
   { inches :: Int32
   , color :: Text
   , name :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Message, Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Hat where
+  encodeMessage _ Hat{..} = mconcat
+    [ encodeMessageField 1 inches
+    , encodeMessageField 2 color
+    , encodeMessageField 3 name
+    ]
+  decodeMessage _ = Hat
+    <$> at decodeMessageField 1
+    <*> at decodeMessageField 2
+    <*> at decodeMessageField 3
+  dotProto = undefined
 
 data BillExtra
   = VatInfo { vatInfo :: Text }
@@ -35,7 +57,26 @@ data Bill = Bill
   , status :: BillingStatus
   , extra :: Maybe BillExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Message, Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Bill where
+  encodeMessage _ Bill{..} = mconcat
+    [ encodeMessageField 1 (Nested price)
+    , encodeMessageField 2 status
+    , case extra of
+         Nothing -> mempty
+         Just (VatInfo vatInfo) -> encodeMessageField 3 vatInfo
+         Just (ZipCode zipCode) -> encodeMessageField 4 zipCode
+    ]
+  decodeMessage _ = Bill
+    <$> at decodeMessageField 1
+    <*> at decodeMessageField 2
+    <*> oneof
+         Nothing
+         [ (3, (Just . VatInfo) <$> decodeMessageField)
+         , (4, (Just . ZipCode) <$> decodeMessageField)
+         ]
+  dotProto = undefined
 
 data BillingStatus
   = UnPaid
@@ -45,18 +86,79 @@ data BillingStatus
   deriving Primitive via PrimitiveEnum BillingStatus
 instance HasDefault BillingStatus where def = UnPaid
 
+data Test = Test
+  { items :: Vector Int32
+  , altPrices :: Vector Price
+  } deriving stock (Eq, Ord, Show, Generic)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Test where
+  encodeMessage _ Test{..} = mconcat
+    [ encodeMessageField 1 (PackedVec items)
+    , encodeMessageField 2 (NestedVec altPrices)
+    ]
+  decodeMessage _ = Test
+    <$> (packedvec <$> (at decodeMessageField 1))
+    <*> (nestedvec <$> (at decodeMessageField 2))
+  dotProto = undefined
+
 data Price = Price
   { dollars :: Word32
   , cents :: Word32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Message, Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Price where
+  encodeMessage _ Price{..} = mconcat
+    [ encodeMessageField 1 dollars
+    , encodeMessageField 2 cents
+    ]
+  decodeMessage _ = Price
+    <$> at decodeMessageField 1
+    <*> at decodeMessageField 2
+  dotProto = undefined
 
 data Ping = Ping
   { service :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Message, Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Ping where
+  encodeMessage _ Ping{..} = mconcat
+    [ encodeMessageField 1 service
+    ]
+  decodeMessage _ = Ping
+    <$> at decodeMessageField 1
+  dotProto = undefined
+
+data PongExtra
+  = T { t :: Word32 }
+  | U { u :: Text }
+  deriving stock (Eq, Ord, Show, Generic)
+  deriving anyclass (Message, Named, FromJSON, ToJSON)
 
 data Pong = Pong
   { status :: Text
+  , stuff :: Vector Test
+  , extra :: Maybe PongExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Message, Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON)
+
+instance Message Pong where
+  encodeMessage _ Pong{..} = mconcat
+    [ encodeMessageField 1 status
+    , encodeMessageField 2 (NestedVec stuff)
+    , case extra of
+         Nothing -> mempty
+         Just (T t) -> encodeMessageField 3 t
+         Just (U u) -> encodeMessageField 4 u
+    ]
+  decodeMessage _ = Pong
+    <$> at decodeMessageField 1
+    <*> (nestedvec <$> (at decodeMessageField 2))
+    <*> oneof
+         Nothing
+         [ (3, (Just . T) <$> decodeMessageField)
+         , (4, (Just . U) <$> decodeMessageField)
+         ]
+  dotProto = undefined

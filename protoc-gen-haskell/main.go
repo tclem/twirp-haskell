@@ -19,6 +19,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"github.com/twitchtv/protogen/typemap"
 )
 
 func main() {
@@ -31,6 +32,7 @@ func main() {
 type generator struct {
 	version string
 	genReq  *plugin.CodeGeneratorRequest
+	reg     *typemap.Registry
 }
 
 func (g *generator) Generate() *plugin.CodeGeneratorResponse {
@@ -62,12 +64,14 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 
 	print(b, "import Data.Aeson")
 	print(b, "import Data.ByteString (ByteString)")
-	print(b, "import Data.Fixed (Fixed)")
 	print(b, "import Data.Int")
 	print(b, "import Data.Text (Text)")
+	print(b, "import Data.Vector (Vector)")
 	print(b, "import Data.Word")
 	print(b, "import GHC.Generics")
 	print(b, "import Proto3.Suite")
+	print(b, "import Proto3.Wire (at, oneof)")
+	print(b, "import Twirp.Types()")
 
 	for _, message := range file.MessageType {
 		generateMessage(b, message)
@@ -112,7 +116,110 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 		first = false
 	}
 	print(b, "  } deriving stock (Eq, Ord, Show, Generic)")
-	print(b, "    deriving anyclass (Message, Named, FromJSON, ToJSON)")
+	print(b, "    deriving anyclass (Named, FromJSON, ToJSON)")
+
+	print(b, "")
+	print(b, "instance Message %s where", n)
+
+	// encodeMessage impl
+	print(b, "  encodeMessage _ %s{..} = mconcat", n)
+	first = true
+	sep := ","
+	for _, field := range message.Field {
+		if field.OneofIndex == nil {
+			fieldName := toHaskellFieldName(field.GetName())
+			num := field.GetNumber()
+			sep = ","
+			if first {
+				sep = "["
+			}
+			label := field.GetLabel()
+			if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
+				if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+					print(b, "    %s encodeMessageField %d (NestedVec %s)", sep, num, fieldName)
+				} else {
+					print(b, "    %s encodeMessageField %d (PackedVec %s)", sep, num, fieldName)
+				}
+			} else {
+				if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+					print(b, "    %s encodeMessageField %d (Nested %s)", sep, num, fieldName)
+				} else {
+					print(b, "    %s encodeMessageField %d %s", sep, num, fieldName)
+				}
+			}
+			first = false
+		}
+	}
+	for i, oneof := range message.OneofDecl {
+		sep = ","
+		if first {
+			sep = "["
+		}
+		oneofName := oneof.GetName()
+		print(b, "    %s case %s of", sep, oneofName)
+		print(b, "         Nothing -> mempty")
+		for _, field := range message.Field {
+			if field.OneofIndex != nil && field.GetOneofIndex() == int32(i) {
+				fieldName := toHaskellFieldName(field.GetName())
+				n := pascalCase(field.GetName())
+				num := field.GetNumber()
+				print(b, "         Just (%s %s) -> encodeMessageField %d %s", n, fieldName, num, fieldName)
+			}
+		}
+
+		first = false
+	}
+	print(b, "    ]")
+
+	// decodeMessage impl
+	print(b, "  decodeMessage _ = %s", n)
+	first = true
+	for _, field := range message.Field {
+		if field.OneofIndex == nil {
+			sep := "<*>"
+			if first {
+				sep = "<$>"
+			}
+			label := field.GetLabel()
+			num := field.GetNumber()
+			if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
+				if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+					print(b, "    %s (nestedvec <$> (at decodeMessageField %d))", sep, num)
+				} else {
+					print(b, "    %s (packedvec <$> (at decodeMessageField %d))", sep, num)
+				}
+			} else {
+				print(b, "    %s at decodeMessageField %d", sep, num)
+
+			}
+			first = false
+		}
+	}
+	for i := range message.OneofDecl {
+		sep = "<*>"
+		if first {
+			sep = "<$>"
+		}
+		print(b, "    %s oneof", sep)
+		print(b, "         Nothing")
+		firstSep2 := true
+		for _, field := range message.Field {
+			if field.OneofIndex != nil && field.GetOneofIndex() == int32(i) {
+				sep2 := ","
+				if firstSep2 {
+					sep2 = "["
+				}
+				n := pascalCase(field.GetName())
+				num := field.GetNumber()
+				print(b, "         %s (%d, (Just . %s) <$> decodeMessageField)", sep2, num, n)
+				firstSep2 = false
+			}
+		}
+		print(b, "         ]")
+	}
+
+	// dotProto impl
+	print(b, "  dotProto = undefined")
 
 	for _, nested := range message.NestedType {
 		generateMessage(b, nested)
@@ -183,9 +290,9 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 	case descriptor.FieldDescriptorProto_TYPE_SINT64:
 		res = "Int64"
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED32:
-		res = "Fixed Int32"
+		res = "Signed Int32"
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED64:
-		res = "Fixed Int64"
+		res = "Signed Int64"
 	case descriptor.FieldDescriptorProto_TYPE_UINT32:
 		res = "Word32"
 	case descriptor.FieldDescriptorProto_TYPE_UINT64:
@@ -213,7 +320,11 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 	}
 
 	if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
-		res = fmt.Sprintf("[%s]", res)
+		if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+			res = fmt.Sprintf("Vector %s", res)
+		} else {
+			res = fmt.Sprintf("Vector %s", res)
+		}
 	} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
 		res = fmt.Sprintf("Maybe %s", res)
 	}
@@ -275,13 +386,6 @@ func filePath(f *descriptor.FileDescriptorProto) string {
 // capitalize, with exceptions for common abbreviations
 func capitalize(s string) string {
 	return strings.Title(strings.ToLower(s))
-	// s = strings.ToLower(s)
-	// switch s {
-	// case "api":
-	// 	return "API"
-	// default:
-	// 	return strings.Title(s)
-	// }
 }
 
 func camelCase(s string) string {
