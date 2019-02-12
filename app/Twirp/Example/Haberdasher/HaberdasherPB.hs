@@ -12,7 +12,6 @@ import Data.Word
 import GHC.Generics
 import Proto3.Suite
 import Proto3.Wire (at, oneof)
-import Twirp.Types()
 
 data Size = Size
   { inches :: Int32

@@ -71,7 +71,6 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import GHC.Generics")
 	print(b, "import Proto3.Suite")
 	print(b, "import Proto3.Wire (at, oneof)")
-	print(b, "import Twirp.Types()")
 
 	for _, message := range file.MessageType {
 		generateMessage(b, message)
