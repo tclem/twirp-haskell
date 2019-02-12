@@ -1,3 +1,5 @@
 .stack-work/
 twirp.cabal
 *~
+*.pyc
+vendor/
