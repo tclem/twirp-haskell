@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+// This is an example set of twirp services.
+
 package twirp.example.haberdasher;
 option go_package = "haberdasher";
 
@@ -43,6 +45,11 @@ message Bill {
   }
 }
 
+message Test {
+  repeated int32 items = 1;
+  repeated Price alt_prices = 2;
+}
+
 message Price {
   uint32 dollars = 1;
   uint32 cents = 2;
@@ -54,4 +61,9 @@ message Ping {
 
 message Pong {
   string status = 1;
+  repeated Test stuff = 2;
+  oneof extra {
+    uint32 t = 3;
+    string u = 4;
+  }
 }
