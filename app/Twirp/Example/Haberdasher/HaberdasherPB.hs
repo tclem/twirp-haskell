@@ -72,8 +72,8 @@ instance Message Bill where
     <*> at decodeMessageField 2
     <*> oneof
          Nothing
-         [ (3, (Just . VatInfo) <$> decodeMessageField)
-         , (4, (Just . ZipCode) <$> decodeMessageField)
+         [ (3, Just . VatInfo <$> decodeMessageField)
+         , (4, Just . ZipCode <$> decodeMessageField)
          ]
   dotProto = undefined
 
@@ -97,8 +97,8 @@ instance Message Test where
     , encodeMessageField 2 (NestedVec altPrices)
     ]
   decodeMessage _ = Test
-    <$> (packedvec <$> (at decodeMessageField 1))
-    <*> (nestedvec <$> (at decodeMessageField 2))
+    <$> (packedvec <$> at decodeMessageField 1)
+    <*> (nestedvec <$> at decodeMessageField 2)
   dotProto = undefined
 
 data Price = Price
@@ -154,10 +154,10 @@ instance Message Pong where
     ]
   decodeMessage _ = Pong
     <$> at decodeMessageField 1
-    <*> (nestedvec <$> (at decodeMessageField 2))
+    <*> (nestedvec <$> at decodeMessageField 2)
     <*> oneof
          Nothing
-         [ (3, (Just . T) <$> decodeMessageField)
-         , (4, (Just . U) <$> decodeMessageField)
+         [ (3, Just . T <$> decodeMessageField)
+         , (4, Just . U <$> decodeMessageField)
          ]
   dotProto = undefined

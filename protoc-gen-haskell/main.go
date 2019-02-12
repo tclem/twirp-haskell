@@ -183,9 +183,9 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 			num := field.GetNumber()
 			if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
 				if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-					print(b, "    %s (nestedvec <$> (at decodeMessageField %d))", sep, num)
+					print(b, "    %s (nestedvec <$> at decodeMessageField %d)", sep, num)
 				} else {
-					print(b, "    %s (packedvec <$> (at decodeMessageField %d))", sep, num)
+					print(b, "    %s (packedvec <$> at decodeMessageField %d)", sep, num)
 				}
 			} else {
 				print(b, "    %s at decodeMessageField %d", sep, num)
@@ -210,7 +210,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 				}
 				n := pascalCase(field.GetName())
 				num := field.GetNumber()
-				print(b, "         %s (%d, (Just . %s) <$> decodeMessageField)", sep2, num, n)
+				print(b, "         %s (%d, Just . %s <$> decodeMessageField)", sep2, num, n)
 				firstSep2 = false
 			}
 		}
