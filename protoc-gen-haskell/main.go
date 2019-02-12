@@ -154,7 +154,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 		if first {
 			sep = "["
 		}
-		oneofName := oneof.GetName()
+		oneofName := toHaskellFieldName(oneof.GetName())
 		print(b, "    %s case %s of", sep, oneofName)
 		print(b, "         Nothing -> mempty")
 		for _, field := range message.Field {
