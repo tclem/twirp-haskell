@@ -27,6 +27,7 @@ dependencies:
 - servant
 - servant-server
 - text
+- vector
 - wai
 - warp
 
