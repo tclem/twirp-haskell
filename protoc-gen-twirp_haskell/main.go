@@ -21,6 +21,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"github.com/twitchtv/protogen/typemap"
 )
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
 type generator struct {
 	version string
 	genReq  *plugin.CodeGeneratorRequest
+	reg     *typemap.Registry
 }
 
 func (g *generator) Generate() *plugin.CodeGeneratorResponse {
@@ -68,6 +70,14 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import %sPB", moduleName)
 	print(b, "")
 
+	comments, err := g.reg.FileComments(file)
+	if err == nil && len(comments.LeadingDetached) > 0 {
+		for _, cs := range comments.LeadingDetached {
+			printComments(b, "", cs)
+		}
+		print(b, "")
+	}
+
 	services := []string{}
 	for _, service := range file.Service {
 		n := service.GetName()
@@ -82,18 +92,40 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 		name := service.GetName()
 		print(b, "")
 
-		methods := []string{}
-		for _, method := range service.GetMethod() {
+		comments, err := g.reg.ServiceComments(file, service)
+		if err == nil && comments.Leading != "" {
+			printComments(b, "", comments.Leading)
+		}
+
+		print(b, "type %sService headers", name)
+
+		for i, method := range service.GetMethod() {
+
+			comments, err := g.reg.MethodComments(file, service, method)
+			if err == nil && comments.Leading != "" {
+				printComments(b, "  ", comments.Leading)
+			}
+
 			n := method.GetName()
 			in := toHaskellType(method.GetInputType())
 			out := toHaskellType(method.GetOutputType())
-			methods = append(methods, fmt.Sprintf("\"%s\" :> headers :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", n, in, out))
+			sep := "  :<|>"
+			if i == 0 {
+				sep = "  =   "
+			}
+			print(b, "%s \"%s\" :> headers :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", sep, n, in, out)
 		}
 
-		print(b, "type %sService headers\n  =    %s", name, strings.Join(methods, " \n  :<|> "))
 	}
 
 	return b.String()
+}
+
+func printComments(b *bytes.Buffer, lead string, comments string) {
+	text := strings.TrimSuffix(comments, "\n")
+	for _, line := range strings.Split(text, "\n") {
+		print(b, "%s-- |%s", lead, line)
+	}
 }
 
 // .foo.Message => Message
