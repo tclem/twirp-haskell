@@ -9,17 +9,17 @@ import Twirp.Example.Haberdasher.HaberdasherPB
 
 --  This is an example set of twirp services.
 
-type HaberdasherAPI headers
-  =    "twirp" :> "twirp.example.haberdasher.Haberdasher" :> HaberdasherService headers
-  :<|> "twirp" :> "twirp.example.haberdasher.Health" :> HealthService headers
+type HaberdasherAPI
+  =    "twirp" :> "twirp.example.haberdasher.Haberdasher" :> HaberdasherService
+  :<|> "twirp" :> "twirp.example.haberdasher.Health" :> HealthService
 
 --  Haberdasher service makes hats for clients.
-type HaberdasherService headers
+type HaberdasherService
   --  MakeHat produces a hat of mysterious, randomly-selected color!
-  =    "MakeHat" :> headers :> ReqBody [Protobuf, JSON] Size :> Post '[Protobuf, JSON] Hat
+  =    "MakeHat" :> ReqBody [Protobuf, JSON] Size :> Post '[Protobuf, JSON] Hat
   --  Get paid
-  :<|> "GetBill" :> headers :> ReqBody [Protobuf, JSON] Hat :> Post '[Protobuf, JSON] Bill
+  :<|> "GetBill" :> ReqBody [Protobuf, JSON] Hat :> Post '[Protobuf, JSON] Bill
 
 --  Health check service
-type HealthService headers
-  =    "Check" :> headers :> ReqBody [Protobuf, JSON] Ping :> Post '[Protobuf, JSON] Pong
+type HealthService
+  =    "Check" :> ReqBody [Protobuf, JSON] Ping :> Post '[Protobuf, JSON] Pong

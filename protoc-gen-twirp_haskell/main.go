@@ -81,12 +81,12 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	services := []string{}
 	for _, service := range file.Service {
 		n := service.GetName()
-		services = append(services, fmt.Sprintf("\"twirp\" :> \"%s.%s\" :> %sService headers", pkgName, n, n))
+		services = append(services, fmt.Sprintf("\"twirp\" :> \"%s.%s\" :> %sService", pkgName, n, n))
 	}
 	apis := strings.Join(services, "\n  :<|> ")
 	apiName := packageType(filePath(file))
 
-	print(b, "type %sAPI headers\n  =    %s", apiName, apis)
+	print(b, "type %sAPI\n  =    %s", apiName, apis)
 
 	for _, service := range file.Service {
 		name := service.GetName()
@@ -97,7 +97,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 			printComments(b, "", comments.Leading)
 		}
 
-		print(b, "type %sService headers", name)
+		print(b, "type %sService", name)
 
 		for i, method := range service.GetMethod() {
 
@@ -113,7 +113,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 			if i == 0 {
 				sep = "  =   "
 			}
-			print(b, "%s \"%s\" :> headers :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", sep, n, in, out)
+			print(b, "%s \"%s\" :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", sep, n, in, out)
 		}
 
 	}
