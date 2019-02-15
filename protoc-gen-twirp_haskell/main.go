@@ -124,7 +124,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 func printComments(b *bytes.Buffer, lead string, comments string) {
 	text := strings.TrimSuffix(comments, "\n")
 	for _, line := range strings.Split(text, "\n") {
-		print(b, "%s-- |%s", lead, line)
+		print(b, "%s-- %s", lead, line)
 	}
 }
 
