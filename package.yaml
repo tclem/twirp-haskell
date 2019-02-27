@@ -1,6 +1,6 @@
 name:                twirp
 version:             0.1.0.0
-github:              "tclem/twirp"
+github:              "tclem/twirp-haskell"
 license:             BSD3
 author:              "Timothy Clem"
 maintainer:          "timothy.clem@gmail.com"
@@ -13,7 +13,7 @@ extra-source-files:
 # synopsis:            Short description of your package
 # category:            Web
 
-description: Please see the README on GitHub at <https://github.com/tclem/twirp#readme>
+description: Please see the README on GitHub at <https://github.com/tclem/twirp-haskell#readme>
 
 dependencies:
 - aeson
