@@ -347,6 +347,16 @@ func toHaskellType(s string) string {
 	return strings.Join(parts, ".")
 }
 
+// handle some names that are hard to deal with in Haskell like `id`.
+func toHaskellFriendlyName(s string) string {
+	switch s {
+	case "id":
+		return "id_"
+	default:
+		return s
+	}
+}
+
 // snake_case to camelCase.
 func toHaskellFieldName(s string) string {
 	parts := []string{}
@@ -357,7 +367,7 @@ func toHaskellFieldName(s string) string {
 			parts = append(parts, strings.Title(strings.ToLower(x)))
 		}
 	}
-	return strings.Join(parts, "")
+	return toHaskellFriendlyName(strings.Join(parts, ""))
 }
 
 // protoFilesToGenerate selects descriptor proto files that were explicitly listed on the command-line.
