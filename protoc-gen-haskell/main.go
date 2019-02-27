@@ -62,6 +62,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "module %sPB where", moduleName)
 	print(b, "")
 
+	print(b, "import Control.DeepSeq")
 	print(b, "import Data.Aeson")
 	print(b, "import Data.ByteString (ByteString)")
 	print(b, "import Data.Int")
@@ -115,7 +116,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 		first = false
 	}
 	print(b, "  } deriving stock (Eq, Ord, Show, Generic)")
-	print(b, "    deriving anyclass (Named, FromJSON, ToJSON)")
+	print(b, "    deriving anyclass (Named, FromJSON, ToJSON, NFData)")
 
 	print(b, "")
 	print(b, "instance Message %s where", n)
@@ -248,7 +249,7 @@ func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *
 		}
 	}
 	print(b, "  deriving stock (Eq, Ord, Show, Generic)")
-	print(b, "  deriving anyclass (Message, Named, FromJSON, ToJSON)")
+	print(b, "  deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)")
 }
 
 func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
@@ -268,7 +269,7 @@ func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 		first = false
 	}
 	print(b, "  deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)")
-	print(b, "  deriving anyclass (Named, MessageField, FromJSON, ToJSON)")
+	print(b, "  deriving anyclass (Named, MessageField, FromJSON, ToJSON, NFData)")
 	print(b, "  deriving Primitive via PrimitiveEnum %s", n)
 	if def != "" {
 		print(b, "instance HasDefault %s where def = %s", n, def)
