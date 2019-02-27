@@ -3,6 +3,7 @@
 {-# OPTIONS_GHC -Wno-unused-imports -Wno-missing-export-lists #-}
 module Twirp.Example.Haberdasher.HaberdasherPB where
 
+import Control.DeepSeq
 import Data.Aeson
 import Data.ByteString (ByteString)
 import Data.Int
@@ -16,7 +17,7 @@ import Proto3.Wire (at, oneof)
 data Size = Size
   { inches :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Size where
   encodeMessage _ Size{..} = mconcat
@@ -31,7 +32,7 @@ data Hat = Hat
   , color :: Text
   , name :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Hat where
   encodeMessage _ Hat{..} = mconcat
@@ -49,14 +50,14 @@ data BillExtra
   = VatInfo { vatInfo :: Text }
   | ZipCode { zipCode :: Text }
   deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (Message, Named, FromJSON, ToJSON)
+  deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
 
 data Bill = Bill
   { price :: Maybe Price
   , status :: BillingStatus
   , extra :: Maybe BillExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Bill where
   encodeMessage _ Bill{..} = mconcat
@@ -81,7 +82,7 @@ data BillingStatus
   = UnPaid
   | Paid
   deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)
-  deriving anyclass (Named, MessageField, FromJSON, ToJSON)
+  deriving anyclass (Named, MessageField, FromJSON, ToJSON, NFData)
   deriving Primitive via PrimitiveEnum BillingStatus
 instance HasDefault BillingStatus where def = UnPaid
 
@@ -89,7 +90,7 @@ data Test = Test
   { items :: Vector Int32
   , altPrices :: Vector Price
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Test where
   encodeMessage _ Test{..} = mconcat
@@ -105,7 +106,7 @@ data Price = Price
   { dollars :: Word32
   , cents :: Word32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Price where
   encodeMessage _ Price{..} = mconcat
@@ -119,29 +120,32 @@ instance Message Price where
 
 data Ping = Ping
   { service :: Text
+  , id_ :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Ping where
   encodeMessage _ Ping{..} = mconcat
     [ encodeMessageField 1 service
+    , encodeMessageField 2 id_
     ]
   decodeMessage _ = Ping
     <$> at decodeMessageField 1
+    <*> at decodeMessageField 2
   dotProto = undefined
 
 data PongExtra
   = T { t :: Word32 }
   | U { u :: Text }
   deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (Message, Named, FromJSON, ToJSON)
+  deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
 
 data Pong = Pong
   { status :: Text
   , stuff :: Vector Test
   , extra :: Maybe PongExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON)
+    deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Pong where
   encodeMessage _ Pong{..} = mconcat
