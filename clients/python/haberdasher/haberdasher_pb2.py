@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='twirp.example.haberdasher',
   syntax='proto3',
   serialized_options=_b('Z\013haberdasher'),
-  serialized_pb=_b('\n\x11haberdasher.proto\x12\x19twirp.example.haberdasher\"\x16\n\x04Size\x12\x0e\n\x06inches\x18\x01 \x01(\x05\"2\n\x03Hat\x12\x0e\n\x06inches\x18\x01 \x01(\x05\x12\r\n\x05\x63olor\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\"\xcf\x01\n\x04\x42ill\x12/\n\x05price\x18\x01 \x01(\x0b\x32 .twirp.example.haberdasher.Price\x12=\n\x06status\x18\x02 \x01(\x0e\x32-.twirp.example.haberdasher.Bill.BillingStatus\x12\x12\n\x08vat_info\x18\x03 \x01(\tH\x00\x12\x12\n\x08zip_code\x18\x04 \x01(\tH\x00\"&\n\rBillingStatus\x12\x0b\n\x07UN_PAID\x10\x00\x12\x08\n\x04PAID\x10\x01\x42\x07\n\x05\x65xtra\"K\n\x04Test\x12\r\n\x05items\x18\x01 \x03(\x05\x12\x34\n\nalt_prices\x18\x02 \x03(\x0b\x32 .twirp.example.haberdasher.Price\"\'\n\x05Price\x12\x0f\n\x07\x64ollars\x18\x01 \x01(\r\x12\r\n\x05\x63\x65nts\x18\x02 \x01(\r\"#\n\x04Ping\x12\x0f\n\x07service\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x05\"i\n\x04Pong\x12\x0e\n\x06status\x18\x01 \x01(\t\x12.\n\x05stuff\x18\x02 \x03(\x0b\x32\x1f.twirp.example.haberdasher.Test\x12\x0b\n\x01t\x18\x03 \x01(\rH\x00\x12\x0b\n\x01u\x18\x04 \x01(\tH\x00\x42\x07\n\x05\x65xtra2\xa5\x01\n\x0bHaberdasher\x12J\n\x07MakeHat\x12\x1f.twirp.example.haberdasher.Size\x1a\x1e.twirp.example.haberdasher.Hat\x12J\n\x07GetBill\x12\x1e.twirp.example.haberdasher.Hat\x1a\x1f.twirp.example.haberdasher.Bill2S\n\x06Health\x12I\n\x05\x43heck\x12\x1f.twirp.example.haberdasher.Ping\x1a\x1f.twirp.example.haberdasher.PongB\rZ\x0bhaberdasherb\x06proto3')
+  serialized_pb=_b('\n\x11haberdasher.proto\x12\x19twirp.example.haberdasher\"\x16\n\x04Size\x12\x0e\n\x06inches\x18\x01 \x01(\x05\"2\n\x03Hat\x12\x0e\n\x06inches\x18\x01 \x01(\x05\x12\r\n\x05\x63olor\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\"\xcf\x01\n\x04\x42ill\x12/\n\x05price\x18\x01 \x01(\x0b\x32 .twirp.example.haberdasher.Price\x12=\n\x06status\x18\x02 \x01(\x0e\x32-.twirp.example.haberdasher.Bill.BillingStatus\x12\x12\n\x08vat_info\x18\x03 \x01(\tH\x00\x12\x12\n\x08zip_code\x18\x04 \x01(\tH\x00\"&\n\rBillingStatus\x12\x0b\n\x07UN_PAID\x10\x00\x12\x08\n\x04PAID\x10\x01\x42\x07\n\x05\x65xtra\"K\n\x04Test\x12\r\n\x05items\x18\x01 \x03(\x05\x12\x34\n\nalt_prices\x18\x02 \x03(\x0b\x32 .twirp.example.haberdasher.Price\"\'\n\x05Price\x12\x0f\n\x07\x64ollars\x18\x01 \x01(\r\x12\r\n\x05\x63\x65nts\x18\x02 \x01(\r\"\x17\n\x04Ping\x12\x0f\n\x07service\x18\x01 \x01(\t\"\x83\x01\n\x04Pong\x12\x0e\n\x06status\x18\x01 \x01(\t\x12.\n\x05stuff\x18\x02 \x03(\x0b\x32\x1f.twirp.example.haberdasher.Test\x12\x0b\n\x01t\x18\x03 \x01(\rH\x00\x12\x0b\n\x01u\x18\x04 \x01(\tH\x00\x12\n\n\x02id\x18\x05 \x01(\x05\x12\x0c\n\x04type\x18\x06 \x01(\tB\x07\n\x05\x65xtra2\xa5\x01\n\x0bHaberdasher\x12J\n\x07MakeHat\x12\x1f.twirp.example.haberdasher.Size\x1a\x1e.twirp.example.haberdasher.Hat\x12J\n\x07GetBill\x12\x1e.twirp.example.haberdasher.Hat\x1a\x1f.twirp.example.haberdasher.Bill2S\n\x06Health\x12I\n\x05\x43heck\x12\x1f.twirp.example.haberdasher.Ping\x1a\x1f.twirp.example.haberdasher.PongB\rZ\x0bhaberdasherb\x06proto3')
 )
 
 
@@ -269,13 +269,6 @@ _PING = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='twirp.example.haberdasher.Ping.id', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -289,7 +282,7 @@ _PING = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=452,
-  serialized_end=487,
+  serialized_end=475,
 )
 
 
@@ -328,6 +321,20 @@ _PONG = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='id', full_name='twirp.example.haberdasher.Pong.id', index=4,
+      number=5, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='type', full_name='twirp.example.haberdasher.Pong.type', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -343,8 +350,8 @@ _PONG = _descriptor.Descriptor(
       name='extra', full_name='twirp.example.haberdasher.Pong.extra',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=489,
-  serialized_end=594,
+  serialized_start=478,
+  serialized_end=609,
 )
 
 _BILL.fields_by_name['price'].message_type = _PRICE
@@ -431,8 +438,8 @@ _HABERDASHER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=597,
-  serialized_end=762,
+  serialized_start=612,
+  serialized_end=777,
   methods=[
   _descriptor.MethodDescriptor(
     name='MakeHat',
@@ -464,8 +471,8 @@ _HEALTH = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=764,
-  serialized_end=847,
+  serialized_start=779,
+  serialized_end=862,
   methods=[
   _descriptor.MethodDescriptor(
     name='Check',

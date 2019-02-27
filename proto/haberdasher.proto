@@ -57,7 +57,6 @@ message Price {
 
 message Ping {
   string service = 1;
-  int32 id = 2;
 }
 
 message Pong {
@@ -67,4 +66,6 @@ message Pong {
     uint32 t = 3;
     string u = 4;
   }
+  int32 id = 5;
+  string type = 6;
 }

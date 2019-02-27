@@ -350,8 +350,8 @@ func toHaskellType(s string) string {
 // handle some names that are hard to deal with in Haskell like `id`.
 func toHaskellFriendlyName(s string) string {
 	switch s {
-	case "id":
-		return "id_"
+	case "id", "type":
+		return s + "_"
 	default:
 		return s
 	}

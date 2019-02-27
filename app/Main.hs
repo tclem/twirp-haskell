@@ -49,7 +49,7 @@ server _requestID = (makeHat :<|> getBill) :<|> checkHealth
       pure $ Bill (Just price) UnPaid Nothing
 
     checkHealth :: Ping -> Handler Pong
-    checkHealth _ = pure $ Pong "OK" [Test [1, 2] [Price 10 1]] (Just (U "hello"))
+    checkHealth _ = pure $ Pong "OK" [Test [1, 2] [Price 10 1]] 1 "" (Just (U "hello"))
 
 choice :: MonadIO m => NonEmpty a -> m a
 choice fs = (fs !!) <$> liftIO (randomRIO (0, pred (length fs)))

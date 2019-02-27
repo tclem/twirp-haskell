@@ -120,18 +120,15 @@ instance Message Price where
 
 data Ping = Ping
   { service :: Text
-  , id_ :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
 instance Message Ping where
   encodeMessage _ Ping{..} = mconcat
     [ encodeMessageField 1 service
-    , encodeMessageField 2 id_
     ]
   decodeMessage _ = Ping
     <$> at decodeMessageField 1
-    <*> at decodeMessageField 2
   dotProto = undefined
 
 data PongExtra
@@ -143,6 +140,8 @@ data PongExtra
 data Pong = Pong
   { status :: Text
   , stuff :: Vector Test
+  , id_ :: Int32
+  , type_ :: Text
   , extra :: Maybe PongExtra
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
@@ -151,6 +150,8 @@ instance Message Pong where
   encodeMessage _ Pong{..} = mconcat
     [ encodeMessageField 1 status
     , encodeMessageField 2 (NestedVec stuff)
+    , encodeMessageField 5 id_
+    , encodeMessageField 6 type_
     , case extra of
          Nothing -> mempty
          Just (T t) -> encodeMessageField 3 t
@@ -159,6 +160,8 @@ instance Message Pong where
   decodeMessage _ = Pong
     <$> at decodeMessageField 1
     <*> (nestedvec <$> at decodeMessageField 2)
+    <*> at decodeMessageField 5
+    <*> at decodeMessageField 6
     <*> oneof
          Nothing
          [ (3, Just . T <$> decodeMessageField)
