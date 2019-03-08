@@ -236,7 +236,6 @@ func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *
 	print(b, "data %s", n)
 	first := true
 	for _, field := range message.Field {
-		fieldName := toHaskellFieldName(field.GetName())
 		n := pascalCase(field.GetName())
 		t := toType(field)
 		if field.OneofIndex != nil {
@@ -244,7 +243,7 @@ func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *
 			if first {
 				sep = "="
 			}
-			print(b, "  %s %s { %s :: %s }", sep, n, fieldName, t)
+			print(b, "  %s %s %s", sep, n, t)
 			first = false
 		}
 	}

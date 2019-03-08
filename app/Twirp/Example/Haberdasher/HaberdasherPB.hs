@@ -47,8 +47,8 @@ instance Message Hat where
   dotProto = undefined
 
 data BillExtra
-  = VatInfo { vatInfo :: Text }
-  | ZipCode { zipCode :: Text }
+  = VatInfo Text
+  | ZipCode Text
   deriving stock (Eq, Ord, Show, Generic)
   deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
 
@@ -132,8 +132,8 @@ instance Message Ping where
   dotProto = undefined
 
 data PongExtra
-  = T { t :: Word32 }
-  | U { u :: Text }
+  = T Word32
+  | U Text
   deriving stock (Eq, Ord, Show, Generic)
   deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
 
