@@ -4,6 +4,7 @@
 module Twirp.Example.Haberdasher.HaberdasherPB where
 
 import           Control.DeepSeq
+import           Control.Monad (msum)
 import qualified Data.Aeson as A
 import           Data.ByteString (ByteString)
 import           Data.Int
@@ -12,17 +13,17 @@ import           Data.Vector (Vector)
 import           Data.Word
 import           GHC.Generics
 import           Proto3.Suite
-import           Proto3.Suite.JSONPB
+import           Proto3.Suite.JSONPB as JSONPB
 import           Proto3.Wire (at, oneof)
 
 data Size = Size
   { inches :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Size where
   parseJSONPB = A.withObject "Size" $ \obj -> Size
-      <$> obj .: "inches"
+    <$> obj .: "inches"
 
 instance ToJSONPB Size where
   toJSONPB Size{..} = object $
@@ -33,6 +34,13 @@ instance ToJSONPB Size where
     [
       "inches" .= inches
     ]
+
+instance FromJSON Size where
+  parseJSON = parseJSONPB
+
+instance ToJSON Size where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Size where
   encodeMessage _ Size{..} = mconcat
@@ -48,13 +56,13 @@ data Hat = Hat
   , color :: Text
   , name :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Hat where
   parseJSONPB = A.withObject "Hat" $ \obj -> Hat
-      <$> obj .: "inches"
-      <*> obj .: "color"
-      <*> obj .: "name"
+    <$> obj .: "inches"
+    <*> obj .: "color"
+    <*> obj .: "name"
 
 instance ToJSONPB Hat where
   toJSONPB Hat{..} = object $
@@ -69,6 +77,13 @@ instance ToJSONPB Hat where
     , "color" .= color
     , "name" .= name
     ]
+
+instance FromJSON Hat where
+  parseJSON = parseJSONPB
+
+instance ToJSON Hat where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Hat where
   encodeMessage _ Hat{..} = mconcat
@@ -87,27 +102,40 @@ data BillExtra
   = VatInfo Text
   | ZipCode Text
   deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
+  deriving anyclass (Message, Named, NFData)
 
 instance FromJSONPB BillExtra where
-  parseJSONPB = undefined
+  parseJSONPB = A.withObject "BillExtra" $ \obj -> msum
+    [
+      VatInfo <$> parseField obj "vat_info"
+    , ZipCode <$> parseField obj "zip_code"
+    ]
 
 instance ToJSONPB BillExtra where
-  toJSONPB = undefined
-  toEncodingPB = undefined
+  toJSONPB (VatInfo x) = object [ "vat_info" .= x ]
+  toJSONPB (ZipCode x) = object [ "zip_code" .= x ]
+  toEncodingPB (VatInfo x) = pairs [ "vat_info" .= x ]
+  toEncodingPB (ZipCode x) = pairs [ "zip_code" .= x ]
+
+instance FromJSON BillExtra where
+  parseJSON = parseJSONPB
+
+instance ToJSON BillExtra where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 data Bill = Bill
   { price :: Maybe Price
   , status :: BillingStatus
   , extra :: Maybe BillExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Bill where
   parseJSONPB = A.withObject "Bill" $ \obj -> Bill
-      <$> obj .: "price"
-      <*> obj .: "status"
-      <*> obj .: "extra"
+    <$> obj .: "price"
+    <*> obj .: "status"
+    <*> obj .: "extra"
 
 instance ToJSONPB Bill where
   toJSONPB Bill{..} = object $
@@ -122,6 +150,13 @@ instance ToJSONPB Bill where
     , "status" .= status
     , "extra" .= extra
     ]
+
+instance FromJSON Bill where
+  parseJSON = parseJSONPB
+
+instance ToJSON Bill where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Bill where
   encodeMessage _ Bill{..} = mconcat
@@ -148,28 +183,37 @@ data BillingStatus
   = UnPaid
   | Paid
   deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)
-  deriving anyclass (Named, MessageField, FromJSON, ToJSON, NFData)
+  deriving anyclass (Named, MessageField, NFData)
   deriving Primitive via PrimitiveEnum BillingStatus
 
 instance HasDefault BillingStatus where def = UnPaid
 
 instance FromJSONPB BillingStatus where
-  parseJSONPB = undefined
+  parseJSONPB (JSONPB.String "UN_PAID") = pure UnPaid
+  parseJSONPB (JSONPB.String "PAID") = pure Paid
+  parseJSONPB x = typeMismatch "BillingStatus" x
 
 instance ToJSONPB BillingStatus where
-  toJSONPB = undefined
-  toEncodingPB = undefined
+  toJSONPB x _ = enumFieldString x
+  toEncodingPB x _= enumFieldEncoding x
+
+instance FromJSON BillingStatus where
+  parseJSON = parseJSONPB
+
+instance ToJSON BillingStatus where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 data Test = Test
   { items :: Vector Int32
   , altPrices :: Vector Price
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Test where
   parseJSONPB = A.withObject "Test" $ \obj -> Test
-      <$> obj .: "items"
-      <*> obj .: "altPrices"
+    <$> obj .: "items"
+    <*> obj .: "altPrices"
 
 instance ToJSONPB Test where
   toJSONPB Test{..} = object $
@@ -182,6 +226,13 @@ instance ToJSONPB Test where
       "items" .= items
     , "altPrices" .= altPrices
     ]
+
+instance FromJSON Test where
+  parseJSON = parseJSONPB
+
+instance ToJSON Test where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Test where
   encodeMessage _ Test{..} = mconcat
@@ -198,12 +249,12 @@ data Price = Price
   { dollars :: Word32
   , cents :: Word32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Price where
   parseJSONPB = A.withObject "Price" $ \obj -> Price
-      <$> obj .: "dollars"
-      <*> obj .: "cents"
+    <$> obj .: "dollars"
+    <*> obj .: "cents"
 
 instance ToJSONPB Price where
   toJSONPB Price{..} = object $
@@ -216,6 +267,13 @@ instance ToJSONPB Price where
       "dollars" .= dollars
     , "cents" .= cents
     ]
+
+instance FromJSON Price where
+  parseJSON = parseJSONPB
+
+instance ToJSON Price where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Price where
   encodeMessage _ Price{..} = mconcat
@@ -231,11 +289,11 @@ instance Message Price where
 data Ping = Ping
   { service :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Ping where
   parseJSONPB = A.withObject "Ping" $ \obj -> Ping
-      <$> obj .: "service"
+    <$> obj .: "service"
 
 instance ToJSONPB Ping where
   toJSONPB Ping{..} = object $
@@ -246,6 +304,13 @@ instance ToJSONPB Ping where
     [
       "service" .= service
     ]
+
+instance FromJSON Ping where
+  parseJSON = parseJSONPB
+
+instance ToJSON Ping where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Ping where
   encodeMessage _ Ping{..} = mconcat
@@ -260,14 +325,27 @@ data PongExtra
   = T Word32
   | U Text
   deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
+  deriving anyclass (Message, Named, NFData)
 
 instance FromJSONPB PongExtra where
-  parseJSONPB = undefined
+  parseJSONPB = A.withObject "PongExtra" $ \obj -> msum
+    [
+      T <$> parseField obj "t"
+    , U <$> parseField obj "u"
+    ]
 
 instance ToJSONPB PongExtra where
-  toJSONPB = undefined
-  toEncodingPB = undefined
+  toJSONPB (T x) = object [ "t" .= x ]
+  toJSONPB (U x) = object [ "u" .= x ]
+  toEncodingPB (T x) = pairs [ "t" .= x ]
+  toEncodingPB (U x) = pairs [ "u" .= x ]
+
+instance FromJSON PongExtra where
+  parseJSON = parseJSONPB
+
+instance ToJSON PongExtra where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 data Pong = Pong
   { status :: Text
@@ -276,15 +354,15 @@ data Pong = Pong
   , type_ :: Text
   , extra :: Maybe PongExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, FromJSON, ToJSON, NFData)
+    deriving anyclass (Named, NFData)
 
 instance FromJSONPB Pong where
   parseJSONPB = A.withObject "Pong" $ \obj -> Pong
-      <$> obj .: "status"
-      <*> obj .: "stuff"
-      <*> obj .: "id_"
-      <*> obj .: "type_"
-      <*> obj .: "extra"
+    <$> obj .: "status"
+    <*> obj .: "stuff"
+    <*> obj .: "id_"
+    <*> obj .: "type_"
+    <*> obj .: "extra"
 
 instance ToJSONPB Pong where
   toJSONPB Pong{..} = object $
@@ -303,6 +381,13 @@ instance ToJSONPB Pong where
     , "type_" .= type_
     , "extra" .= extra
     ]
+
+instance FromJSON Pong where
+  parseJSON = parseJSONPB
+
+instance ToJSON Pong where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
 
 instance Message Pong where
   encodeMessage _ Pong{..} = mconcat
