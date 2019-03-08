@@ -3,25 +3,41 @@
 {-# OPTIONS_GHC -Wno-unused-imports -Wno-missing-export-lists #-}
 module Twirp.Example.Haberdasher.HaberdasherPB where
 
-import Control.DeepSeq
-import Data.Aeson
-import Data.ByteString (ByteString)
-import Data.Int
-import Data.Text (Text)
-import Data.Vector (Vector)
-import Data.Word
-import GHC.Generics
-import Proto3.Suite
-import Proto3.Wire (at, oneof)
+import           Control.DeepSeq
+import qualified Data.Aeson as A
+import           Data.ByteString (ByteString)
+import           Data.Int
+import           Data.Text (Text)
+import           Data.Vector (Vector)
+import           Data.Word
+import           GHC.Generics
+import           Proto3.Suite
+import           Proto3.Suite.JSONPB
+import           Proto3.Wire (at, oneof)
 
 data Size = Size
   { inches :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Size where
+  parseJSONPB = A.withObject "Size" $ \obj -> Size
+      <$> obj .: "inches"
+
+instance ToJSONPB Size where
+  toJSONPB Size{..} = object $
+    [
+      "inches" .= inches
+    ]
+  toEncodingPB Size{..} = pairs $
+    [
+      "inches" .= inches
+    ]
+
 instance Message Size where
   encodeMessage _ Size{..} = mconcat
-    [ encodeMessageField 1 inches
+    [
+      encodeMessageField 1 inches
     ]
   decodeMessage _ = Size
     <$> at decodeMessageField 1
@@ -34,9 +50,30 @@ data Hat = Hat
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Hat where
+  parseJSONPB = A.withObject "Hat" $ \obj -> Hat
+      <$> obj .: "inches"
+      <*> obj .: "color"
+      <*> obj .: "name"
+
+instance ToJSONPB Hat where
+  toJSONPB Hat{..} = object $
+    [
+      "inches" .= inches
+    , "color" .= color
+    , "name" .= name
+    ]
+  toEncodingPB Hat{..} = pairs $
+    [
+      "inches" .= inches
+    , "color" .= color
+    , "name" .= name
+    ]
+
 instance Message Hat where
   encodeMessage _ Hat{..} = mconcat
-    [ encodeMessageField 1 inches
+    [
+      encodeMessageField 1 inches
     , encodeMessageField 2 color
     , encodeMessageField 3 name
     ]
@@ -52,6 +89,13 @@ data BillExtra
   deriving stock (Eq, Ord, Show, Generic)
   deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB BillExtra where
+  parseJSONPB = undefined
+
+instance ToJSONPB BillExtra where
+  toJSONPB = undefined
+  toEncodingPB = undefined
+
 data Bill = Bill
   { price :: Maybe Price
   , status :: BillingStatus
@@ -59,9 +103,30 @@ data Bill = Bill
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Bill where
+  parseJSONPB = A.withObject "Bill" $ \obj -> Bill
+      <$> obj .: "price"
+      <*> obj .: "status"
+      <*> obj .: "extra"
+
+instance ToJSONPB Bill where
+  toJSONPB Bill{..} = object $
+    [
+      "price" .= price
+    , "status" .= status
+    , "extra" .= extra
+    ]
+  toEncodingPB Bill{..} = pairs $
+    [
+      "price" .= price
+    , "status" .= status
+    , "extra" .= extra
+    ]
+
 instance Message Bill where
   encodeMessage _ Bill{..} = mconcat
-    [ encodeMessageField 1 (Nested price)
+    [
+      encodeMessageField 1 (Nested price)
     , encodeMessageField 2 status
     , case extra of
          Nothing -> mempty
@@ -73,7 +138,8 @@ instance Message Bill where
     <*> at decodeMessageField 2
     <*> oneof
          Nothing
-         [ (3, Just . VatInfo <$> decodeMessageField)
+         [
+           (3, Just . VatInfo <$> decodeMessageField)
          , (4, Just . ZipCode <$> decodeMessageField)
          ]
   dotProto = undefined
@@ -84,7 +150,15 @@ data BillingStatus
   deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)
   deriving anyclass (Named, MessageField, FromJSON, ToJSON, NFData)
   deriving Primitive via PrimitiveEnum BillingStatus
+
 instance HasDefault BillingStatus where def = UnPaid
+
+instance FromJSONPB BillingStatus where
+  parseJSONPB = undefined
+
+instance ToJSONPB BillingStatus where
+  toJSONPB = undefined
+  toEncodingPB = undefined
 
 data Test = Test
   { items :: Vector Int32
@@ -92,9 +166,27 @@ data Test = Test
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Test where
+  parseJSONPB = A.withObject "Test" $ \obj -> Test
+      <$> obj .: "items"
+      <*> obj .: "altPrices"
+
+instance ToJSONPB Test where
+  toJSONPB Test{..} = object $
+    [
+      "items" .= items
+    , "altPrices" .= altPrices
+    ]
+  toEncodingPB Test{..} = pairs $
+    [
+      "items" .= items
+    , "altPrices" .= altPrices
+    ]
+
 instance Message Test where
   encodeMessage _ Test{..} = mconcat
-    [ encodeMessageField 1 (PackedVec items)
+    [
+      encodeMessageField 1 (PackedVec items)
     , encodeMessageField 2 (NestedVec altPrices)
     ]
   decodeMessage _ = Test
@@ -108,9 +200,27 @@ data Price = Price
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Price where
+  parseJSONPB = A.withObject "Price" $ \obj -> Price
+      <$> obj .: "dollars"
+      <*> obj .: "cents"
+
+instance ToJSONPB Price where
+  toJSONPB Price{..} = object $
+    [
+      "dollars" .= dollars
+    , "cents" .= cents
+    ]
+  toEncodingPB Price{..} = pairs $
+    [
+      "dollars" .= dollars
+    , "cents" .= cents
+    ]
+
 instance Message Price where
   encodeMessage _ Price{..} = mconcat
-    [ encodeMessageField 1 dollars
+    [
+      encodeMessageField 1 dollars
     , encodeMessageField 2 cents
     ]
   decodeMessage _ = Price
@@ -123,9 +233,24 @@ data Ping = Ping
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Ping where
+  parseJSONPB = A.withObject "Ping" $ \obj -> Ping
+      <$> obj .: "service"
+
+instance ToJSONPB Ping where
+  toJSONPB Ping{..} = object $
+    [
+      "service" .= service
+    ]
+  toEncodingPB Ping{..} = pairs $
+    [
+      "service" .= service
+    ]
+
 instance Message Ping where
   encodeMessage _ Ping{..} = mconcat
-    [ encodeMessageField 1 service
+    [
+      encodeMessageField 1 service
     ]
   decodeMessage _ = Ping
     <$> at decodeMessageField 1
@@ -137,6 +262,13 @@ data PongExtra
   deriving stock (Eq, Ord, Show, Generic)
   deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB PongExtra where
+  parseJSONPB = undefined
+
+instance ToJSONPB PongExtra where
+  toJSONPB = undefined
+  toEncodingPB = undefined
+
 data Pong = Pong
   { status :: Text
   , stuff :: Vector Test
@@ -146,9 +278,36 @@ data Pong = Pong
   } deriving stock (Eq, Ord, Show, Generic)
     deriving anyclass (Named, FromJSON, ToJSON, NFData)
 
+instance FromJSONPB Pong where
+  parseJSONPB = A.withObject "Pong" $ \obj -> Pong
+      <$> obj .: "status"
+      <*> obj .: "stuff"
+      <*> obj .: "id_"
+      <*> obj .: "type_"
+      <*> obj .: "extra"
+
+instance ToJSONPB Pong where
+  toJSONPB Pong{..} = object $
+    [
+      "status" .= status
+    , "stuff" .= stuff
+    , "id_" .= id_
+    , "type_" .= type_
+    , "extra" .= extra
+    ]
+  toEncodingPB Pong{..} = pairs $
+    [
+      "status" .= status
+    , "stuff" .= stuff
+    , "id_" .= id_
+    , "type_" .= type_
+    , "extra" .= extra
+    ]
+
 instance Message Pong where
   encodeMessage _ Pong{..} = mconcat
-    [ encodeMessageField 1 status
+    [
+      encodeMessageField 1 status
     , encodeMessageField 2 (NestedVec stuff)
     , encodeMessageField 5 id_
     , encodeMessageField 6 type_
@@ -164,7 +323,8 @@ instance Message Pong where
     <*> at decodeMessageField 6
     <*> oneof
          Nothing
-         [ (3, Just . T <$> decodeMessageField)
+         [
+           (3, Just . T <$> decodeMessageField)
          , (4, Just . U <$> decodeMessageField)
          ]
   dotProto = undefined

@@ -62,16 +62,17 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "module %sPB where", moduleName)
 	print(b, "")
 
-	print(b, "import Control.DeepSeq")
-	print(b, "import Data.Aeson")
-	print(b, "import Data.ByteString (ByteString)")
-	print(b, "import Data.Int")
-	print(b, "import Data.Text (Text)")
-	print(b, "import Data.Vector (Vector)")
-	print(b, "import Data.Word")
-	print(b, "import GHC.Generics")
-	print(b, "import Proto3.Suite")
-	print(b, "import Proto3.Wire (at, oneof)")
+	print(b, "import           Control.DeepSeq")
+	print(b, "import qualified Data.Aeson as A")
+	print(b, "import           Data.ByteString (ByteString)")
+	print(b, "import           Data.Int")
+	print(b, "import           Data.Text (Text)")
+	print(b, "import           Data.Vector (Vector)")
+	print(b, "import           Data.Word")
+	print(b, "import           GHC.Generics")
+	print(b, "import           Proto3.Suite")
+	print(b, "import           Proto3.Suite.JSONPB")
+	print(b, "import           Proto3.Wire (at, oneof)")
 
 	for _, message := range file.MessageType {
 		generateMessage(b, message)
@@ -118,20 +119,45 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "  } deriving stock (Eq, Ord, Show, Generic)")
 	print(b, "    deriving anyclass (Named, FromJSON, ToJSON, NFData)")
 
+	// Generate a FromJSONPB Instance
+	print(b, "")
+	print(b, "instance FromJSONPB %s where", n)
+	print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj -> %s", n, n)
+
+	for _, f := range getFieldsForInstance(message, "<$>", "<*>") {
+		print(b, "      %s obj .: \"%s\"", f.sep, f.fieldName)
+	}
+
+	// Generate a ToJSONPB Instance
+	print(b, "")
+	print(b, "instance ToJSONPB %s where", n)
+	print(b, "  toJSONPB %s{..} = object $", n)
+	print(b, "    [")
+	for _, f := range getFieldsForInstance(message, " ", ",") {
+		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
+	}
+	print(b, "    ]")
+	print(b, "  toEncodingPB %s{..} = pairs $", n)
+	print(b, "    [")
+	for _, f := range getFieldsForInstance(message, " ", ",") {
+		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
+	}
+	print(b, "    ]")
+
 	print(b, "")
 	print(b, "instance Message %s where", n)
 
 	// encodeMessage impl
 	print(b, "  encodeMessage _ %s{..} = mconcat", n)
+	print(b, "    [")
 	first = true
-	sep := ","
 	for _, field := range message.Field {
 		if field.OneofIndex == nil {
 			fieldName := toHaskellFieldName(field.GetName())
 			num := field.GetNumber()
-			sep = ","
+			sep := ","
 			if first {
-				sep = "["
+				sep = " "
 			}
 			label := field.GetLabel()
 			if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
@@ -151,9 +177,9 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 		}
 	}
 	for i, oneof := range message.OneofDecl {
-		sep = ","
+		sep := ","
 		if first {
-			sep = "["
+			sep = " "
 		}
 		oneofName := toHaskellFieldName(oneof.GetName())
 		print(b, "    %s case %s of", sep, oneofName)
@@ -196,18 +222,19 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 		}
 	}
 	for i := range message.OneofDecl {
-		sep = "<*>"
+		sep := "<*>"
 		if first {
 			sep = "<$>"
 		}
 		print(b, "    %s oneof", sep)
 		print(b, "         Nothing")
+		print(b, "         [")
 		firstSep2 := true
 		for _, field := range message.Field {
 			if field.OneofIndex != nil && field.GetOneofIndex() == int32(i) {
 				sep2 := ","
 				if firstSep2 {
-					sep2 = "["
+					sep2 = " "
 				}
 				n := pascalCase(field.GetName())
 				num := field.GetNumber()
@@ -249,6 +276,18 @@ func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *
 	}
 	print(b, "  deriving stock (Eq, Ord, Show, Generic)")
 	print(b, "  deriving anyclass (Message, Named, FromJSON, ToJSON, NFData)")
+
+	// Generate a FromJSONPB Instance
+	print(b, "")
+	print(b, "instance FromJSONPB %s where", n)
+	print(b, "  parseJSONPB = undefined")
+	// print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj ->", n)
+
+	// Generate a ToJSONPB Instance
+	print(b, "")
+	print(b, "instance ToJSONPB %s where", n)
+	print(b, "  toJSONPB = undefined")
+	print(b, "  toEncodingPB = undefined")
 }
 
 func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
@@ -271,8 +310,53 @@ func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 	print(b, "  deriving anyclass (Named, MessageField, FromJSON, ToJSON, NFData)")
 	print(b, "  deriving Primitive via PrimitiveEnum %s", n)
 	if def != "" {
+		print(b, "")
 		print(b, "instance HasDefault %s where def = %s", n, def)
 	}
+
+	// Generate a FromJSONPB Instance
+	print(b, "")
+	print(b, "instance FromJSONPB %s where", n)
+	print(b, "  parseJSONPB = undefined")
+	// print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj ->", n)
+
+	// Generate a ToJSONPB Instance
+	print(b, "")
+	print(b, "instance ToJSONPB %s where", n)
+	print(b, "  toJSONPB = undefined")
+	print(b, "  toEncodingPB = undefined")
+}
+
+type aField struct {
+	sep       string
+	fieldName string
+}
+
+func getFieldsForInstance(message *descriptor.DescriptorProto, firstSep string, restSep string) []aField {
+	fields := []aField{}
+
+	first := true
+	for _, field := range message.Field {
+		if field.OneofIndex == nil {
+			fieldName := toHaskellFieldName(field.GetName())
+			sep := restSep
+			if first {
+				sep = firstSep
+			}
+			fields = append(fields, aField{sep: sep, fieldName: fieldName})
+			first = false
+		}
+	}
+	for _, oneof := range message.OneofDecl {
+		fieldName := toHaskellFieldName(oneof.GetName())
+		sep := restSep
+		if first {
+			sep = firstSep
+		}
+		fields = append(fields, aField{sep: sep, fieldName: fieldName})
+		first = false
+	}
+	return fields
 }
 
 // Reference: https://github.com/golang/protobuf/blob/c823c79ea1570fb5ff454033735a8e68575d1d0f/protoc-gen-go/descriptor/descriptor.proto#L136
