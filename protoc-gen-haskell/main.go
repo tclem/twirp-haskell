@@ -100,7 +100,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	first := true
 	for _, field := range message.Field {
 		n := toHaskellFieldName(field.GetName())
-		t := toType(field)
+		t := toType(field, "", "")
 		if field.OneofIndex == nil {
 			sep := ","
 			if first {
@@ -133,13 +133,13 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	// Generate a ToJSONPB Instance
 	print(b, "")
 	print(b, "instance ToJSONPB %s where", n)
-	print(b, "  toJSONPB %s{..} = object $", n)
+	print(b, "  toJSONPB %s{..} = object", n)
 	print(b, "    [")
 	for _, f := range fieldsForMessageInstance(message, " ", ",") {
 		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
 	}
 	print(b, "    ]")
-	print(b, "  toEncodingPB %s{..} = pairs $", n)
+	print(b, "  toEncodingPB %s{..} = pairs", n)
 	print(b, "    [")
 	for _, f := range fieldsForMessageInstance(message, " ", ",") {
 		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
@@ -268,7 +268,7 @@ func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *
 	first := true
 	for _, field := range message.Field {
 		n := pascalCase(field.GetName())
-		t := toType(field)
+		t := toType(field, "(", ")")
 		if field.OneofIndex != nil {
 			sep := "|"
 			if first {
@@ -410,7 +410,7 @@ func printToFromJSONInstances(b *bytes.Buffer, n string) {
 }
 
 // Reference: https://github.com/golang/protobuf/blob/c823c79ea1570fb5ff454033735a8e68575d1d0f/protoc-gen-go/descriptor/descriptor.proto#L136
-func toType(field *descriptor.FieldDescriptorProto) string {
+func toType(field *descriptor.FieldDescriptorProto, prefix string, suffix string) string {
 	label := field.GetLabel()
 	res := ""
 	switch *field.Type {
@@ -423,17 +423,17 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 	case descriptor.FieldDescriptorProto_TYPE_SINT64:
 		res = "Int64"
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED32:
-		res = "Signed Int32"
+		res = fmt.Sprintf("%sSigned Int32%s", prefix, suffix)
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED64:
-		res = "Signed Int64"
+		res = fmt.Sprintf("%sSigned Int64%s", prefix, suffix)
 	case descriptor.FieldDescriptorProto_TYPE_UINT32:
 		res = "Word32"
 	case descriptor.FieldDescriptorProto_TYPE_UINT64:
 		res = "Word64"
 	case descriptor.FieldDescriptorProto_TYPE_FIXED32:
-		res = "Fixed Word32"
+		res = fmt.Sprintf("%sFixed Word32%s", prefix, suffix)
 	case descriptor.FieldDescriptorProto_TYPE_FIXED64:
-		res = "Fixed Word64"
+		res = fmt.Sprintf("%sFixed Word64%s", prefix, suffix)
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
 		res = "Text"
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
@@ -459,7 +459,7 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 			res = fmt.Sprintf("Vector %s", res)
 		}
 	} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-		res = fmt.Sprintf("(Maybe %s)", res)
+		res = fmt.Sprintf("%sMaybe %s%s", prefix, res, suffix)
 	}
 
 	return res

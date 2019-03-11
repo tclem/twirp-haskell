@@ -28,11 +28,11 @@ instance FromJSONPB Size where
     <$> obj .: "inches"
 
 instance ToJSONPB Size where
-  toJSONPB Size{..} = object $
+  toJSONPB Size{..} = object
     [
       "inches" .= inches
     ]
-  toEncodingPB Size{..} = pairs $
+  toEncodingPB Size{..} = pairs
     [
       "inches" .= inches
     ]
@@ -67,13 +67,13 @@ instance FromJSONPB Hat where
     <*> obj .: "name"
 
 instance ToJSONPB Hat where
-  toJSONPB Hat{..} = object $
+  toJSONPB Hat{..} = object
     [
       "inches" .= inches
     , "color" .= color
     , "name" .= name
     ]
-  toEncodingPB Hat{..} = pairs $
+  toEncodingPB Hat{..} = pairs
     [
       "inches" .= inches
     , "color" .= color
@@ -127,7 +127,7 @@ instance ToJSON BillExtra where
   toEncoding = toAesonEncoding
 
 data Bill = Bill
-  { price :: (Maybe Price)
+  { price :: Maybe Price
   , status :: BillingStatus
   , extra :: Maybe BillExtra
   } deriving stock (Eq, Ord, Show, Generic)
@@ -140,13 +140,13 @@ instance FromJSONPB Bill where
     <*> obj .: "extra"
 
 instance ToJSONPB Bill where
-  toJSONPB Bill{..} = object $
+  toJSONPB Bill{..} = object
     [
       "price" .= price
     , "status" .= status
     , "extra" .= extra
     ]
-  toEncodingPB Bill{..} = pairs $
+  toEncodingPB Bill{..} = pairs
     [
       "price" .= price
     , "status" .= status
@@ -218,12 +218,12 @@ instance FromJSONPB Test where
     <*> obj .: "altPrices"
 
 instance ToJSONPB Test where
-  toJSONPB Test{..} = object $
+  toJSONPB Test{..} = object
     [
       "items" .= items
     , "altPrices" .= altPrices
     ]
-  toEncodingPB Test{..} = pairs $
+  toEncodingPB Test{..} = pairs
     [
       "items" .= items
     , "altPrices" .= altPrices
@@ -259,12 +259,12 @@ instance FromJSONPB Price where
     <*> obj .: "cents"
 
 instance ToJSONPB Price where
-  toJSONPB Price{..} = object $
+  toJSONPB Price{..} = object
     [
       "dollars" .= dollars
     , "cents" .= cents
     ]
-  toEncodingPB Price{..} = pairs $
+  toEncodingPB Price{..} = pairs
     [
       "dollars" .= dollars
     , "cents" .= cents
@@ -298,11 +298,11 @@ instance FromJSONPB Ping where
     <$> obj .: "service"
 
 instance ToJSONPB Ping where
-  toJSONPB Ping{..} = object $
+  toJSONPB Ping{..} = object
     [
       "service" .= service
     ]
-  toEncodingPB Ping{..} = pairs $
+  toEncodingPB Ping{..} = pairs
     [
       "service" .= service
     ]
@@ -367,7 +367,7 @@ instance FromJSONPB Pong where
     <*> obj .: "extra"
 
 instance ToJSONPB Pong where
-  toJSONPB Pong{..} = object $
+  toJSONPB Pong{..} = object
     [
       "status" .= status
     , "stuff" .= stuff
@@ -375,7 +375,7 @@ instance ToJSONPB Pong where
     , "type_" .= type_
     , "extra" .= extra
     ]
-  toEncodingPB Pong{..} = pairs $
+  toEncodingPB Pong{..} = pairs
     [
       "status" .= status
     , "stuff" .= stuff
@@ -426,11 +426,11 @@ instance FromJSONPB FieldTestMessage where
     <$> obj .: "testBytes"
 
 instance ToJSONPB FieldTestMessage where
-  toJSONPB FieldTestMessage{..} = object $
+  toJSONPB FieldTestMessage{..} = object
     [
       "testBytes" .= testBytes
     ]
-  toEncodingPB FieldTestMessage{..} = pairs $
+  toEncodingPB FieldTestMessage{..} = pairs
     [
       "testBytes" .= testBytes
     ]
