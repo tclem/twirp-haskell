@@ -69,3 +69,7 @@ message Pong {
   int32 id = 5;
   string type = 6;
 }
+
+message FieldTestMessage {
+  bytes test_bytes = 3;
+}
