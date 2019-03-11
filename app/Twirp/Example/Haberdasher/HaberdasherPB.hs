@@ -6,9 +6,11 @@ module Twirp.Example.Haberdasher.HaberdasherPB where
 import           Control.DeepSeq
 import           Control.Monad (msum)
 import qualified Data.Aeson as A
+import qualified Data.Aeson.Encoding as E
 import           Data.ByteString (ByteString)
 import           Data.Int
 import           Data.Text (Text)
+import qualified Data.Text as T
 import           Data.Vector (Vector)
 import           Data.Word
 import           GHC.Generics
@@ -194,8 +196,8 @@ instance FromJSONPB BillingStatus where
   parseJSONPB x = typeMismatch "BillingStatus" x
 
 instance ToJSONPB BillingStatus where
-  toJSONPB x _ = enumFieldString x
-  toEncodingPB x _= enumFieldEncoding x
+  toJSONPB x _ = A.String . T.toUpper . T.pack $ show x
+  toEncodingPB x _ = E.text . T.toUpper . T.pack  $ show x
 
 instance FromJSON BillingStatus where
   parseJSON = parseJSONPB

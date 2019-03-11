@@ -65,9 +65,11 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import           Control.DeepSeq")
 	print(b, "import           Control.Monad (msum)")
 	print(b, "import qualified Data.Aeson as A")
+	print(b, "import qualified Data.Aeson.Encoding as E")
 	print(b, "import           Data.ByteString (ByteString)")
 	print(b, "import           Data.Int")
 	print(b, "import           Data.Text (Text)")
+	print(b, "import qualified Data.Text as T")
 	print(b, "import           Data.Vector (Vector)")
 	print(b, "import           Data.Word")
 	print(b, "import           GHC.Generics")
@@ -340,8 +342,8 @@ func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 	// Generate a ToJSONPB Instance
 	print(b, "")
 	print(b, "instance ToJSONPB %s where", n)
-	print(b, "  toJSONPB x _ = enumFieldString x")
-	print(b, "  toEncodingPB x _= enumFieldEncoding x")
+	print(b, "  toJSONPB x _ = A.String . T.toUpper . T.pack $ show x")
+	print(b, "  toEncodingPB x _ = E.text . T.toUpper . T.pack  $ show x")
 
 	printToFromJSONInstances(b, n)
 }
