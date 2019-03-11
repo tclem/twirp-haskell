@@ -457,7 +457,7 @@ func toType(field *descriptor.FieldDescriptorProto) string {
 			res = fmt.Sprintf("Vector %s", res)
 		}
 	} else if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-		res = fmt.Sprintf("Maybe %s", res)
+		res = fmt.Sprintf("(Maybe %s)", res)
 	}
 
 	return res
