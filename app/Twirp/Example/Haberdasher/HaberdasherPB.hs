@@ -125,7 +125,7 @@ instance ToJSON BillExtra where
   toEncoding = toAesonEncoding
 
 data Bill = Bill
-  { price :: Maybe Price
+  { price :: (Maybe Price)
   , status :: BillingStatus
   , extra :: Maybe BillExtra
   } deriving stock (Eq, Ord, Show, Generic)
@@ -412,4 +412,39 @@ instance Message Pong where
            (3, Just . T <$> decodeMessageField)
          , (4, Just . U <$> decodeMessageField)
          ]
+  dotProto = undefined
+
+data FieldTestMessage = FieldTestMessage
+  { testBytes :: ByteString
+  } deriving stock (Eq, Ord, Show, Generic)
+    deriving anyclass (Named, NFData)
+
+instance FromJSONPB FieldTestMessage where
+  parseJSONPB = A.withObject "FieldTestMessage" $ \obj -> FieldTestMessage
+    <$> obj .: "testBytes"
+
+instance ToJSONPB FieldTestMessage where
+  toJSONPB FieldTestMessage{..} = object $
+    [
+      "testBytes" .= testBytes
+    ]
+  toEncodingPB FieldTestMessage{..} = pairs $
+    [
+      "testBytes" .= testBytes
+    ]
+
+instance FromJSON FieldTestMessage where
+  parseJSON = parseJSONPB
+
+instance ToJSON FieldTestMessage where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
+
+instance Message FieldTestMessage where
+  encodeMessage _ FieldTestMessage{..} = mconcat
+    [
+      encodeMessageField 3 testBytes
+    ]
+  decodeMessage _ = FieldTestMessage
+    <$> at decodeMessageField 3
   dotProto = undefined
