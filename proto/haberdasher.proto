@@ -4,6 +4,7 @@ syntax = "proto3";
 
 package twirp.example.haberdasher;
 option go_package = "haberdasher";
+option (haskell_imports) = "Data.Color;Data.ZipCode"
 
 // Haberdasher service makes hats for clients.
 service Haberdasher {
@@ -26,7 +27,7 @@ message Size {
 // A Hat is a piece of headwear made by a Haberdasher.
 message Hat {
   int32 inches = 1;
-  string color = 2; // anything but "invisible"
+  string color = 2 [(haskell_type) = "Data.Color.Color"]; // anything but "invisible"
   string name = 3; // i.e. "bowler"
 }
 
@@ -36,7 +37,7 @@ message Bill {
 
   oneof extra {
     string vat_info = 3;
-    string zip_code = 4;
+    string zip_code = 4 [(haskell_type) = "Data.ZipCode.ZipCode"];
   }
 
   enum BillingStatus {
