@@ -102,6 +102,16 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	return b.String()
 }
 
+func constructorFor(message *descriptor.DescriptorProto) string {
+	ctor := message.GetName()
+
+	if len(message.Field) > 0 {
+		ctor += "{..}"
+	}
+
+	return ctor
+}
+
 func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	oneofs := []string{}
 	for _, oneof := range message.OneofDecl {
@@ -113,6 +123,16 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "")
 	print(b, "data %s = %s", n, n)
 	first := true
+
+	noFields := len(message.Field) == 0
+
+	// if there are no fields, we need to output an opening brace,
+	// as we won't hit the below for loop, which generates a
+	// correctly-aligned opening brace.
+	if noFields {
+		print(b, "  {")
+	}
+
 	for _, field := range message.Field {
 		n := toHaskellFieldName(field.GetName())
 		t := toType(field, "", "")
@@ -138,23 +158,30 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "    deriving anyclass (Named, NFData)")
 
 	// Generate a FromJSONPB Instance
+	// Empty datatypes require an invocation of `pure`
+
 	print(b, "")
 	print(b, "instance FromJSONPB %s where", n)
-	print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj -> %s", n, n)
-	for _, f := range fieldsForMessageInstance(message, "<$>", "<*>") {
-		print(b, "    %s obj .: \"%s\"", f.sep, f.fieldName)
+
+	if noFields {
+		print(b, "  parseJSONPB = A.withObject \"%s\" $ \\_ -> pure %s", n, n)
+	} else {
+		print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj -> %s", n, n)
+		for _, f := range fieldsForMessageInstance(message, "<$>", "<*>") {
+			print(b, "    %s obj .: \"%s\"", f.sep, f.fieldName)
+		}
 	}
 
 	// Generate a ToJSONPB Instance
 	print(b, "")
 	print(b, "instance ToJSONPB %s where", n)
-	print(b, "  toJSONPB %s{..} = object", n)
+	print(b, "  toJSONPB %s = object", constructorFor(message))
 	print(b, "    [")
 	for _, f := range fieldsForMessageInstance(message, " ", ",") {
 		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
 	}
 	print(b, "    ]")
-	print(b, "  toEncodingPB %s{..} = pairs", n)
+	print(b, "  toEncodingPB %s = pairs", constructorFor(message))
 	print(b, "    [")
 	for _, f := range fieldsForMessageInstance(message, " ", ",") {
 		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
@@ -167,7 +194,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "instance Message %s where", n)
 
 	// encodeMessage impl
-	print(b, "  encodeMessage _ %s{..} = mconcat", n)
+	print(b, "  encodeMessage _ %s = mconcat", constructorFor(message))
 	print(b, "    [")
 	first = true
 	for _, field := range message.Field {
@@ -217,7 +244,12 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "    ]")
 
 	// decodeMessage impl
-	print(b, "  decodeMessage _ = %s", n)
+	if noFields {
+		print(b, "  decodeMessage _ = pure %s", n)
+	} else {
+		print(b, "  decodeMessage _ = %s", n)
+	}
+
 	first = true
 	for _, field := range message.Field {
 		if field.OneofIndex == nil {

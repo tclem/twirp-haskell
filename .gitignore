@@ -3,3 +3,4 @@ twirp.cabal
 *~
 *.pyc
 vendor/
+app/Twirp/Example/*.hs
