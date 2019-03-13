@@ -16,6 +16,9 @@ import (
 
 	// "unicode"
 
+	"./twirp/protobuf"
+
+	//pbexts "github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
@@ -76,6 +79,19 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import           Proto3.Suite")
 	print(b, "import           Proto3.Suite.JSONPB as JSONPB")
 	print(b, "import           Proto3.Wire (at, oneof)")
+
+
+
+	ex, _ := proto.GetExtension(file.Options, haskell.E_Imports)
+	if ex != nil {
+		asString := *ex.(*string)
+		imports := strings.Split(asString, ";")
+		print(b, "");
+		for _, val := range imports {
+			print(b, "import qualified %s", val)
+		}
+	}
+
 
 	for _, message := range file.MessageType {
 		generateMessage(b, message)
@@ -411,6 +427,11 @@ func printToFromJSONInstances(b *bytes.Buffer, n string) {
 
 // Reference: https://github.com/golang/protobuf/blob/c823c79ea1570fb5ff454033735a8e68575d1d0f/protoc-gen-go/descriptor/descriptor.proto#L136
 func toType(field *descriptor.FieldDescriptorProto, prefix string, suffix string) string {
+	ex, _ := proto.GetExtension(field.Options, haskell.E_Type)
+	if ex != nil {
+		return *ex.(*string)
+	}
+
 	label := field.GetLabel()
 	res := ""
 	switch *field.Type {
