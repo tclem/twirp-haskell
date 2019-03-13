@@ -18,7 +18,6 @@ import (
 
 	"./twirp/protobuf"
 
-	//pbexts "github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
