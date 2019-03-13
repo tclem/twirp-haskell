@@ -98,6 +98,16 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "")
 	print(b, "data %s = %s", n, n)
 	first := true
+
+	noFields := len(message.Field) == 0
+
+	// if there are no fields, we need to output an opening brace,
+	// as we won't hit the below for loop, which generates a
+	// correctly-aligned opening brace.
+	if noFields {
+		print(b, "  {")
+	}
+
 	for _, field := range message.Field {
 		n := toHaskellFieldName(field.GetName())
 		t := toType(field, "", "")
@@ -123,11 +133,18 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "    deriving anyclass (Named, NFData)")
 
 	// Generate a FromJSONPB Instance
+	// Empty datatypes require an invocation of `pure`
+
 	print(b, "")
 	print(b, "instance FromJSONPB %s where", n)
-	print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj -> %s", n, n)
-	for _, f := range fieldsForMessageInstance(message, "<$>", "<*>") {
-		print(b, "    %s obj .: \"%s\"", f.sep, f.fieldName)
+
+	if noFields {
+		print(b, "  parseJSONPB = A.withObject \"%s\" $ \\_ -> pure %s", n, n)
+	} else {
+		print(b, "  parseJSONPB = A.withObject \"%s\" $ \\obj -> %s", n, n)
+		for _, f := range fieldsForMessageInstance(message, "<$>", "<*>") {
+			print(b, "    %s obj .: \"%s\"", f.sep, f.fieldName)
+		}
 	}
 
 	// Generate a ToJSONPB Instance
