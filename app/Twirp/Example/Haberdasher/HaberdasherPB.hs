@@ -14,14 +14,15 @@ import qualified Data.Text as T
 import           Data.Vector (Vector)
 import           Data.Word
 import           GHC.Generics
-import           Proto3.Suite
+import           Proto3.Suite (decodeMessageField, encodeMessageField, nestedvec, packedvec)
+import qualified Proto3.Suite as Proto3
 import           Proto3.Suite.JSONPB as JSONPB
 import           Proto3.Wire (at, oneof)
 
 data Size = Size
   { inches :: Int32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Size where
   parseJSONPB = A.withObject "Size" $ \obj -> Size
@@ -44,7 +45,7 @@ instance ToJSON Size where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Size where
+instance Proto3.Message Size where
   encodeMessage _ Size{..} = mconcat
     [
       encodeMessageField 1 inches
@@ -58,7 +59,7 @@ data Hat = Hat
   , color :: Text
   , name :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Hat where
   parseJSONPB = A.withObject "Hat" $ \obj -> Hat
@@ -87,7 +88,7 @@ instance ToJSON Hat where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Hat where
+instance Proto3.Message Hat where
   encodeMessage _ Hat{..} = mconcat
     [
       encodeMessageField 1 inches
@@ -104,7 +105,7 @@ data BillExtra
   = VatInfo Text
   | ZipCode Text
   deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (Message, Named, NFData)
+  deriving anyclass (Proto3.Message, Proto3.Named, NFData)
 
 instance FromJSONPB BillExtra where
   parseJSONPB = A.withObject "BillExtra" $ \obj -> msum
@@ -131,7 +132,7 @@ data Bill = Bill
   , status :: BillingStatus
   , extra :: Maybe BillExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Bill where
   parseJSONPB = A.withObject "Bill" $ \obj -> Bill
@@ -160,10 +161,10 @@ instance ToJSON Bill where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Bill where
+instance Proto3.Message Bill where
   encodeMessage _ Bill{..} = mconcat
     [
-      encodeMessageField 1 (Nested price)
+      encodeMessageField 1 (Proto3.Nested price)
     , encodeMessageField 2 status
     , case extra of
          Nothing -> mempty
@@ -185,10 +186,10 @@ data BillingStatus
   = UnPaid
   | Paid
   deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)
-  deriving anyclass (Named, MessageField, NFData)
-  deriving Primitive via PrimitiveEnum BillingStatus
+  deriving anyclass (Proto3.Named, Proto3.MessageField, NFData)
+  deriving Proto3.Primitive via Proto3.PrimitiveEnum BillingStatus
 
-instance HasDefault BillingStatus where def = UnPaid
+instance Proto3.HasDefault BillingStatus where def = UnPaid
 
 instance FromJSONPB BillingStatus where
   parseJSONPB (JSONPB.String "UN_PAID") = pure UnPaid
@@ -210,7 +211,7 @@ data Test = Test
   { items :: Vector Int32
   , altPrices :: Vector Price
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Test where
   parseJSONPB = A.withObject "Test" $ \obj -> Test
@@ -236,11 +237,11 @@ instance ToJSON Test where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Test where
+instance Proto3.Message Test where
   encodeMessage _ Test{..} = mconcat
     [
-      encodeMessageField 1 (PackedVec items)
-    , encodeMessageField 2 (NestedVec altPrices)
+      encodeMessageField 1 (Proto3.PackedVec items)
+    , encodeMessageField 2 (Proto3.NestedVec altPrices)
     ]
   decodeMessage _ = Test
     <$> (packedvec <$> at decodeMessageField 1)
@@ -251,7 +252,7 @@ data Price = Price
   { dollars :: Word32
   , cents :: Word32
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Price where
   parseJSONPB = A.withObject "Price" $ \obj -> Price
@@ -277,7 +278,7 @@ instance ToJSON Price where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Price where
+instance Proto3.Message Price where
   encodeMessage _ Price{..} = mconcat
     [
       encodeMessageField 1 dollars
@@ -291,7 +292,7 @@ instance Message Price where
 data Ping = Ping
   { service :: Text
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Ping where
   parseJSONPB = A.withObject "Ping" $ \obj -> Ping
@@ -314,7 +315,7 @@ instance ToJSON Ping where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Ping where
+instance Proto3.Message Ping where
   encodeMessage _ Ping{..} = mconcat
     [
       encodeMessageField 1 service
@@ -327,7 +328,7 @@ data PongExtra
   = T Word32
   | U Text
   deriving stock (Eq, Ord, Show, Generic)
-  deriving anyclass (Message, Named, NFData)
+  deriving anyclass (Proto3.Message, Proto3.Named, NFData)
 
 instance FromJSONPB PongExtra where
   parseJSONPB = A.withObject "PongExtra" $ \obj -> msum
@@ -356,7 +357,7 @@ data Pong = Pong
   , type_ :: Text
   , extra :: Maybe PongExtra
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB Pong where
   parseJSONPB = A.withObject "Pong" $ \obj -> Pong
@@ -391,11 +392,11 @@ instance ToJSON Pong where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message Pong where
+instance Proto3.Message Pong where
   encodeMessage _ Pong{..} = mconcat
     [
       encodeMessageField 1 status
-    , encodeMessageField 2 (NestedVec stuff)
+    , encodeMessageField 2 (Proto3.NestedVec stuff)
     , encodeMessageField 5 id_
     , encodeMessageField 6 type_
     , case extra of
@@ -419,7 +420,7 @@ instance Message Pong where
 data FieldTestMessage = FieldTestMessage
   { testBytes :: ByteString
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB FieldTestMessage where
   parseJSONPB = A.withObject "FieldTestMessage" $ \obj -> FieldTestMessage
@@ -442,7 +443,7 @@ instance ToJSON FieldTestMessage where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message FieldTestMessage where
+instance Proto3.Message FieldTestMessage where
   encodeMessage _ FieldTestMessage{..} = mconcat
     [
       encodeMessageField 3 testBytes
@@ -454,7 +455,7 @@ instance Message FieldTestMessage where
 data EmptyMessage = EmptyMessage
   {
   } deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (Named, NFData)
+    deriving anyclass (Proto3.Named, NFData)
 
 instance FromJSONPB EmptyMessage where
   parseJSONPB = A.withObject "EmptyMessage" $ \_ -> pure EmptyMessage
@@ -474,7 +475,7 @@ instance ToJSON EmptyMessage where
   toJSON = toAesonValue
   toEncoding = toAesonEncoding
 
-instance Message EmptyMessage where
+instance Proto3.Message EmptyMessage where
   encodeMessage _ EmptyMessage = mconcat
     [
     ]
