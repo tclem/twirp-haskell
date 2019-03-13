@@ -73,3 +73,5 @@ message Pong {
 message FieldTestMessage {
   bytes test_bytes = 3;
 }
+
+message EmptyMessage {}
