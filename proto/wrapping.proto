@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+// This is an example for how to write .proto files that generate
+// Haskell source with fine-grained specification of field types.
+
+import "twirp/protobuf/haskell.proto";
+
+package twirp.example.wrapping;
+option go_package = "wrapping";
+option (twirp.protobuf.haskell.imports) = "Data.Color";
+
+// This assumes that there exists a Data.Color.Color module in the
+// project into which the custom code is generated. This data type
+// must have appropriate JSONPB and MessageField instances.
+
+message Car {
+  string manufacturer = 1;
+  string color = 2 [(twirp.protobuf.haskell.type) = "Data.Color.Color"];
+}
+
+// The generated code will use Data.Color.Color for its field.
