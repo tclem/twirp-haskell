@@ -2,13 +2,14 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package twirp.haskell.extensions;
-option go_package = "twirpextensions";
+package twirp.haskell;
+
+option go_package = "twirp.haskell";
 
 extend google.protobuf.FileOptions {
-  string haskell_imports = 50000;
+  string imports = 50000;
 }
 
 extend google.protobuf.FieldOptions {
-  string haskell_type = 50000;
+  string type = 50000;
 }
