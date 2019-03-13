@@ -4,7 +4,7 @@ import "google/protobuf/descriptor.proto";
 
 package twirp.haskell;
 
-option go_package = "twirp.haskell";
+option go_package = "haskell";
 
 extend google.protobuf.FileOptions {
   string imports = 50000;
