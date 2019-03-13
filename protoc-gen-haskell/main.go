@@ -87,6 +87,16 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	return b.String()
 }
 
+func constructorFor(message *descriptor.DescriptorProto) string {
+	ctor := message.GetName()
+
+	if len(message.Field) > 0 {
+		ctor += "{..}"
+	}
+
+	return ctor
+}
+
 func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	oneofs := []string{}
 	for _, oneof := range message.OneofDecl {
@@ -150,13 +160,13 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	// Generate a ToJSONPB Instance
 	print(b, "")
 	print(b, "instance ToJSONPB %s where", n)
-	print(b, "  toJSONPB %s{..} = object", n)
+	print(b, "  toJSONPB %s = object", constructorFor(message))
 	print(b, "    [")
 	for _, f := range fieldsForMessageInstance(message, " ", ",") {
 		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
 	}
 	print(b, "    ]")
-	print(b, "  toEncodingPB %s{..} = pairs", n)
+	print(b, "  toEncodingPB %s = pairs", constructorFor(message))
 	print(b, "    [")
 	for _, f := range fieldsForMessageInstance(message, " ", ",") {
 		print(b, "    %s \"%s\" .= %s", f.sep, f.fieldName, f.fieldName)
@@ -169,7 +179,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "instance Message %s where", n)
 
 	// encodeMessage impl
-	print(b, "  encodeMessage _ %s{..} = mconcat", n)
+	print(b, "  encodeMessage _ %s = mconcat", constructorFor(message))
 	print(b, "    [")
 	first = true
 	for _, field := range message.Field {
@@ -219,7 +229,12 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	print(b, "    ]")
 
 	// decodeMessage impl
-	print(b, "  decodeMessage _ = %s", n)
+	if noFields {
+		print(b, "  decodeMessage _ = pure %s", n)
+	} else {
+		print(b, "  decodeMessage _ = %s", n)
+	}
+
 	first = true
 	for _, field := range message.Field {
 		if field.OneofIndex == nil {
