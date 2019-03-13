@@ -75,23 +75,20 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import           Data.Vector (Vector)")
 	print(b, "import           Data.Word")
 	print(b, "import           GHC.Generics")
-	print(b, "import           Proto3.Suite (Named, decodeMessageField, encodeMessageField)")
+	print(b, "import           Proto3.Suite (decodeMessageField, encodeMessageField, nestedvec, packedvec)")
 	print(b, "import qualified Proto3.Suite as Proto3")
 	print(b, "import           Proto3.Suite.JSONPB as JSONPB")
 	print(b, "import           Proto3.Wire (at, oneof)")
-
-
 
 	ex, _ := proto.GetExtension(file.Options, haskell.E_Imports)
 	if ex != nil {
 		asString := *ex.(*string)
 		imports := strings.Split(asString, ";")
-		print(b, "");
+		print(b, "")
 		for _, val := range imports {
 			print(b, "import qualified %s", val)
 		}
 	}
-
 
 	for _, message := range file.MessageType {
 		generateMessage(b, message)
@@ -156,7 +153,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 		first = false
 	}
 	print(b, "  } deriving stock (Eq, Ord, Show, Generic)")
-	print(b, "    deriving anyclass (Named, NFData)")
+	print(b, "    deriving anyclass (Proto3.Named, NFData)")
 
 	// Generate a FromJSONPB Instance
 	// Empty datatypes require an invocation of `pure`
@@ -209,13 +206,13 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 			label := field.GetLabel()
 			if label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
 				if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-					print(b, "    %s encodeMessageField %d (NestedVec %s)", sep, num, fieldName)
+					print(b, "    %s encodeMessageField %d (Proto3.NestedVec %s)", sep, num, fieldName)
 				} else {
-					print(b, "    %s encodeMessageField %d (PackedVec %s)", sep, num, fieldName)
+					print(b, "    %s encodeMessageField %d (Proto3.PackedVec %s)", sep, num, fieldName)
 				}
 			} else {
 				if *field.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-					print(b, "    %s encodeMessageField %d (Nested %s)", sep, num, fieldName)
+					print(b, "    %s encodeMessageField %d (Proto3.Nested %s)", sep, num, fieldName)
 				} else {
 					print(b, "    %s encodeMessageField %d %s", sep, num, fieldName)
 				}
@@ -327,7 +324,7 @@ func generateOneof(b *bytes.Buffer, message *descriptor.DescriptorProto, oneof *
 		}
 	}
 	print(b, "  deriving stock (Eq, Ord, Show, Generic)")
-	print(b, "  deriving anyclass (Message, Named, NFData)")
+	print(b, "  deriving anyclass (Proto3.Message, Proto3.Named, NFData)")
 
 	// Generate a FromJSONPB Instance
 	print(b, "")
@@ -370,11 +367,11 @@ func generateEnum(b *bytes.Buffer, enum *descriptor.EnumDescriptorProto) {
 		first = false
 	}
 	print(b, "  deriving stock (Eq, Ord, Show, Enum, Bounded, Generic)")
-	print(b, "  deriving anyclass (Named, MessageField, NFData)")
-	print(b, "  deriving Primitive via PrimitiveEnum %s", n)
+	print(b, "  deriving anyclass (Proto3.Named, Proto3.MessageField, NFData)")
+	print(b, "  deriving Proto3.Primitive via Proto3.PrimitiveEnum %s", n)
 	if def != "" {
 		print(b, "")
-		print(b, "instance HasDefault %s where def = %s", n, def)
+		print(b, "instance Proto3.HasDefault %s where def = %s", n, def)
 	}
 
 	// Generate a FromJSONPB Instance
