@@ -73,7 +73,8 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import           Data.Vector (Vector)")
 	print(b, "import           Data.Word")
 	print(b, "import           GHC.Generics")
-	print(b, "import           Proto3.Suite")
+	print(b, "import           Proto3.Suite (Named, decodeMessageField, encodeMessageField)")
+	print(b, "import qualified Proto3.Suite as Proto3")
 	print(b, "import           Proto3.Suite.JSONPB as JSONPB")
 	print(b, "import           Proto3.Wire (at, oneof)")
 
@@ -149,7 +150,7 @@ func generateMessage(b *bytes.Buffer, message *descriptor.DescriptorProto) {
 	printToFromJSONInstances(b, n)
 
 	print(b, "")
-	print(b, "instance Message %s where", n)
+	print(b, "instance Proto3.Message %s where", n)
 
 	// encodeMessage impl
 	print(b, "  encodeMessage _ %s{..} = mconcat", n)
