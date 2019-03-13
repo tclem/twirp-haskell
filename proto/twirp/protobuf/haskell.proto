@@ -7,9 +7,15 @@ package twirp.protobuf.haskell;
 option go_package = "haskell";
 
 extend google.protobuf.FileOptions {
+  // In an ideal world this would be a `repeated string`, but protobuf
+  // has no syntactic constructs for list literals, so if you need to
+  // import multiple modules you must separate them with semicolons.
+  // All these imports are fully qualified to prevent collisions.
   string imports = 50000;
 }
 
 extend google.protobuf.FieldOptions {
+  // You must specify the fully-qualified name, e.g. `Data.Foo.Thing`
+  // rather than `Thing`.
   string type = 50000;
 }
