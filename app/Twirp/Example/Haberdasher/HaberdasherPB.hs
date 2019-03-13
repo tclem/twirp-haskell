@@ -450,3 +450,33 @@ instance Message FieldTestMessage where
   decodeMessage _ = FieldTestMessage
     <$> at decodeMessageField 3
   dotProto = undefined
+
+data EmptyMessage = EmptyMessage
+  {
+  } deriving stock (Eq, Ord, Show, Generic)
+    deriving anyclass (Named, NFData)
+
+instance FromJSONPB EmptyMessage where
+  parseJSONPB = A.withObject "EmptyMessage" $ \_ -> pure EmptyMessage
+
+instance ToJSONPB EmptyMessage where
+  toJSONPB EmptyMessage = object
+    [
+    ]
+  toEncodingPB EmptyMessage = pairs
+    [
+    ]
+
+instance FromJSON EmptyMessage where
+  parseJSON = parseJSONPB
+
+instance ToJSON EmptyMessage where
+  toJSON = toAesonValue
+  toEncoding = toAesonEncoding
+
+instance Message EmptyMessage where
+  encodeMessage _ EmptyMessage = mconcat
+    [
+    ]
+  decodeMessage _ = pure EmptyMessage
+  dotProto = undefined
