@@ -3,7 +3,7 @@ syntax = "proto3";
 // This is an example for how to write .proto files that generate
 // Haskell source with fine-grained specification of field types.
 
-import "internal/gen/haskell/haskell.proto";
+import "pkg/gen/haskell/haskell.proto";
 
 package twirp.example.wrapping;
 option go_package = "wrapping";

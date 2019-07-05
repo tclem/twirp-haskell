@@ -7,8 +7,8 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Compile haskell.proto (extensions to protoc)
-protoc --proto_path=./internal/gen/haskell \
-  --go_out=./internal/gen/haskell \
+protoc --proto_path=./pkg/gen/haskell \
+  --go_out=./pkg/gen/haskell \
   haskell.proto
 
 protoc --proto_path=./proto \

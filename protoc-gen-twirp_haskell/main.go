@@ -21,7 +21,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/tclem/twirp-haskell/internal/gen/haskell"
+	"github.com/tclem/twirp-haskell/pkg/gen/haskell"
 	"github.com/twitchtv/protogen/typemap"
 )
 
