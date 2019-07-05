@@ -199,6 +199,7 @@ func toModuleName(file *descriptor.FileDescriptorProto) string {
 
 func getHaskellPackageOption(file *descriptor.FileDescriptorProto) string {
 	ex, _ := proto.GetExtension(file.Options, E_HaskellPackage)
+
 	if ex != nil {
 		asString := *ex.(*string)
 		return asString
