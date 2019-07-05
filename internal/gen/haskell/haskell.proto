@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/descriptor.proto";
 
-package twirp.protobuf.haskell;
+package twirp.haskell;
 
 option go_package = "haskell";
 

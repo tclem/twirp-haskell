@@ -21,6 +21,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"github.com/tclem/twirp-haskell/internal/gen/haskell"
 	"github.com/twitchtv/protogen/typemap"
 )
 
@@ -182,7 +183,7 @@ func toModuleName(file *descriptor.FileDescriptorProto) string {
 	pkgName := file.GetPackage()
 
 	parts := []string{}
-	haskellPackage := getHaskellPackageOption(file)
+	haskellPackage := haskell.GetHaskellPackageOption(file)
 	if haskellPackage != "" {
 		parts = strings.Split(haskellPackage, ".")
 	} else {
@@ -198,7 +199,7 @@ func toModuleName(file *descriptor.FileDescriptorProto) string {
 }
 
 func getHaskellPackageOption(file *descriptor.FileDescriptorProto) string {
-	ex, _ := proto.GetExtension(file.Options, E_HaskellPackage)
+	ex, _ := proto.GetExtension(file.Options, haskell.E_HaskellPackage)
 
 	if ex != nil {
 		asString := *ex.(*string)
