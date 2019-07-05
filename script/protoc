@@ -19,3 +19,8 @@ protoc --proto_path=./proto \
   --python_out="$PYTHON_CLIENT_PATH" \
   --twirp_python_out="$PYTHON_CLIENT_PATH" \
   ./proto/haberdasher.proto
+
+# Show how to compile haskell.proto
+# protoc --proto_path=./proto \
+#   --go_out=./protoc-gen-haskell \
+#   ./proto/twirp/protobuf/haskell.proto

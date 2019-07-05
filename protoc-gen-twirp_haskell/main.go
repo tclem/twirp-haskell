@@ -61,6 +61,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 
 	pkgName := file.GetPackage()
 	moduleName := toModuleName(file)
+
 	print(b, "module %s where", moduleName)
 	print(b, "")
 
@@ -179,15 +180,30 @@ func packageFileName(path string) string {
 
 func toModuleName(file *descriptor.FileDescriptorProto) string {
 	pkgName := file.GetPackage()
+
 	parts := []string{}
-	for _, p := range strings.Split(pkgName, ".") {
-		parts = append(parts, capitalize(p))
+	haskellPackage := getHaskellPackageOption(file)
+	if haskellPackage != "" {
+		parts = strings.Split(haskellPackage, ".")
+	} else {
+		for _, p := range strings.Split(pkgName, ".") {
+			parts = append(parts, capitalize(p))
+		}
 	}
 
 	apiName := packageType(filePath(file))
 	parts = append(parts, apiName)
 
 	return strings.Join(parts, ".")
+}
+
+func getHaskellPackageOption(file *descriptor.FileDescriptorProto) string {
+	ex, _ := proto.GetExtension(file.Options, E_HaskellPackage)
+	if ex != nil {
+		asString := *ex.(*string)
+		return asString
+	}
+	return ""
 }
 
 // capitalize, with exceptions for common abbreviations

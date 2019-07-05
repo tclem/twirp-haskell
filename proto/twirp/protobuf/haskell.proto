@@ -12,6 +12,9 @@ extend google.protobuf.FileOptions {
   // import multiple modules you must separate them with semicolons.
   // All these imports are fully qualified to prevent collisions.
   string imports = 50000;
+
+  // Optional naming of haskell package.
+  string haskell_package = 50001;
 }
 
 extend google.protobuf.FieldOptions {

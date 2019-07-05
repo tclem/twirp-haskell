@@ -2,4 +2,4 @@
 
 cd "$(dirname "$0")/.."
 
-go run protoc-gen-twirp_haskell/main.go protoc-gen-twirp_haskell/version.go
+go run protoc-gen-twirp_haskell/main.go protoc-gen-twirp_haskell/haskell.pb.go protoc-gen-twirp_haskell/version.go
