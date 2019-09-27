@@ -5,7 +5,10 @@ module Twirp.Example.Haberdasher.Haberdasher where
 import Servant
 import Twirp
 
-import Twirp.Example.Haberdasher.HaberdasherPB
+import Proto.Haberdasher
+import Proto.Haberdasher_Fields
+import Data.ProtoLens (defMessage, showMessage)
+
 
 --  This is an example set of twirp services.
 
@@ -16,10 +19,10 @@ type HaberdasherAPI
 --  Haberdasher service makes hats for clients.
 type HaberdasherService
   --  MakeHat produces a hat of mysterious, randomly-selected color!
-  =    "MakeHat" :> ReqBody [Protobuf, JSON] Size :> Post '[Protobuf, JSON] Hat
+  =    "MakeHat" :> ReqBody [Protobuf, JSONPB] Size :> Post '[Protobuf, JSONPB] Hat
   --  Get paid
-  :<|> "GetBill" :> ReqBody [Protobuf, JSON] Hat :> Post '[Protobuf, JSON] Bill
+  :<|> "GetBill" :> ReqBody [Protobuf, JSONPB] Hat :> Post '[Protobuf, JSONPB] Bill
 
 --  Health check service
 type HealthService
-  =    "Check" :> ReqBody [Protobuf, JSON] Ping :> Post '[Protobuf, JSON] Pong
+  =    "Check" :> ReqBody [Protobuf, JSONPB] Ping :> Post '[Protobuf, JSONPB] Pong
