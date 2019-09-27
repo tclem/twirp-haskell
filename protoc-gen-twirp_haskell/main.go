@@ -61,6 +61,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "{-# LANGUAGE TypeOperators #-}")
 
 	pkgName := file.GetPackage()
+	apiName := packageType(filePath(file))
 	moduleName := toModuleName(file)
 
 	print(b, "module %s where", moduleName)
@@ -69,7 +70,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import Servant")
 	print(b, "import Twirp")
 	print(b, "")
-	print(b, "import %sPB", moduleName)
+	print(b, "import Proto.%s", apiName)
 	print(b, "")
 
 	comments, err := g.reg.FileComments(file)
@@ -86,7 +87,6 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 		services = append(services, fmt.Sprintf("\"twirp\" :> \"%s.%s\" :> %sService", pkgName, n, n))
 	}
 	apis := strings.Join(services, "\n  :<|> ")
-	apiName := packageType(filePath(file))
 
 	print(b, "type %sAPI\n  =    %s", apiName, apis)
 
@@ -115,7 +115,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 			if i == 0 {
 				sep = "  =   "
 			}
-			print(b, "%s \"%s\" :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", sep, n, in, out)
+			print(b, "%s \"%s\" :> ReqBody [Protobuf, JSONPB] %s :> Post '[Protobuf, JSONPB] %s", sep, n, in, out)
 		}
 
 	}

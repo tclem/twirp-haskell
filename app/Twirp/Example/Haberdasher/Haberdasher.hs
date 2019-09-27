@@ -6,9 +6,6 @@ import Servant
 import Twirp
 
 import Proto.Haberdasher
-import Proto.Haberdasher_Fields
-import Data.ProtoLens (defMessage, showMessage)
-
 
 --  This is an example set of twirp services.
 
