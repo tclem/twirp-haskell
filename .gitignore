@@ -1,6 +1,4 @@
-.stack-work/
-twirp.cabal
+/dist*
+/hie.yaml
 *~
 *.pyc
-vendor/
-app/Twirp/Example/*.hs
