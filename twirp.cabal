@@ -1,4 +1,4 @@
-cabal-version: 2.4
+cabal-version:  2.4
 
 name:           twirp
 version:        0.1.0.0
@@ -14,7 +14,7 @@ copyright:      2019 Timothy Clem
 build-type:     Simple
 extra-source-files: README.md
 
-tested-with:         GHC == 8.6.4
+tested-with:    GHC == 8.6.5
 
 -- GHC extensions shared between targets
 common haskell
