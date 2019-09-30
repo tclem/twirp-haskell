@@ -40,9 +40,9 @@ common dependencies
     , base >=4.7 && <5
     , bytestring
     , microlens
-    , proto-lens == 0.4.0.1
-    , proto-lens-json == 0.3.0.0
-    , proto-lens-runtime == 0.4.0.2
+    , proto-lens
+    , proto-lens-json
+    , proto-lens-runtime
 
 library
   import: haskell, dependencies
