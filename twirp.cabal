@@ -1,0 +1,114 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: e46f0ad9fec328404a5c4a1ecef15bc93bca76c56edf1301c2f3c1db0ca35495
+
+name:           twirp
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/tclem/twirp-haskell#readme>
+homepage:       https://github.com/tclem/twirp-haskell#readme
+bug-reports:    https://github.com/tclem/twirp-haskell/issues
+author:         Timothy Clem
+maintainer:     timothy.clem@gmail.com
+copyright:      2019 Timothy Clem
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/tclem/twirp-haskell
+
+library
+  exposed-modules:
+      Twirp
+      Twirp.Middleware.Errors
+  other-modules:
+      Paths_twirp
+  hs-source-dirs:
+      src
+  default-extensions: DataKinds DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable FlexibleContexts FlexibleInstances MultiParamTypeClasses OverloadedStrings RecordWildCards StandaloneDeriving StrictData TypeApplications
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , deepseq
+    , http-media
+    , http-types
+    , proto3-suite
+    , proto3-wire
+    , random
+    , servant
+    , servant-server
+    , text
+    , vector
+    , wai
+    , warp
+  default-language: Haskell2010
+
+executable twirp-exe
+  main-is: Main.hs
+  other-modules:
+      Twirp.Example.Haberdasher.Haberdasher
+      Twirp.Example.Haberdasher.HaberdasherPB
+      Twirp.Example.Haberdasher.Proto.Wrapping
+      Twirp.Example.Haberdasher.Proto.WrappingPB
+      Twirp.Example.Haberdasher.Wrapping
+      Twirp.Example.Haberdasher.WrappingPB
+      Paths_twirp
+  hs-source-dirs:
+      app
+  default-extensions: DataKinds DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable FlexibleContexts FlexibleInstances MultiParamTypeClasses OverloadedStrings RecordWildCards StandaloneDeriving StrictData TypeApplications
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , deepseq
+    , http-media
+    , http-types
+    , proto3-suite
+    , proto3-wire
+    , random
+    , servant
+    , servant-server
+    , text
+    , twirp
+    , vector
+    , wai
+    , warp
+  default-language: Haskell2010
+
+test-suite twirp-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_twirp
+  hs-source-dirs:
+      test
+  default-extensions: DataKinds DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable FlexibleContexts FlexibleInstances MultiParamTypeClasses OverloadedStrings RecordWildCards StandaloneDeriving StrictData TypeApplications
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , bytestring
+    , deepseq
+    , http-media
+    , http-types
+    , proto3-suite
+    , proto3-wire
+    , random
+    , servant
+    , servant-server
+    , text
+    , twirp
+    , vector
+    , wai
+    , warp
+  default-language: Haskell2010
