@@ -16,10 +16,10 @@ type HaberdasherAPI
 --  Haberdasher service makes hats for clients.
 type HaberdasherService
   --  MakeHat produces a hat of mysterious, randomly-selected color!
-  =    "MakeHat" :> ReqBody [Protobuf, JSONPB] Size :> Post '[Protobuf, JSONPB] Hat
+  =    "MakeHat" :> ReqBody [Protobuf, JSON] Size :> Post '[Protobuf, JSON] Hat
   --  Get paid
-  :<|> "GetBill" :> ReqBody [Protobuf, JSONPB] Hat :> Post '[Protobuf, JSONPB] Bill
+  :<|> "GetBill" :> ReqBody [Protobuf, JSON] Hat :> Post '[Protobuf, JSON] Bill
 
 --  Health check service
 type HealthService
-  =    "Check" :> ReqBody [Protobuf, JSONPB] Ping :> Post '[Protobuf, JSONPB] Pong
+  =    "Check" :> ReqBody [Protobuf, JSON] Ping :> Post '[Protobuf, JSON] Pong

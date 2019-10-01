@@ -1,6 +1,5 @@
 module Twirp
   ( Protobuf
-  , JSONPB
   , module Middleware
   ) where
 
@@ -12,7 +11,6 @@ import Data.ByteString.Builder as BB
 import Network.HTTP.Media ((//))
 import Data.ProtoLens.Encoding as Proto
 import Data.ProtoLens.Message (Message)
-import Data.ProtoLens.JSON (encodeMessageJSON)
 import Servant.API
 
 data Protobuf
@@ -25,15 +23,3 @@ instance Message a => MimeRender Protobuf a where
 
 instance Message a => MimeUnrender Protobuf a where
   mimeUnrender _ = first show . Proto.decodeMessage . BC.toStrict
-
-
-data JSONPB
-
-instance Accept JSONPB where
-  contentType _ = "application" // "protobuf"
-
-instance Message a => MimeRender JSONPB a where
-  mimeRender _ = encodeMessageJSON
-
-instance Message a => MimeUnrender JSONPB a where
-  mimeUnrender _ = undefined -- first show . Proto.decodeMessage . BC.toStrict

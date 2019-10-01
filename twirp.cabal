@@ -41,7 +41,6 @@ common dependencies
     , bytestring
     , microlens
     , proto-lens
-    , proto-lens-json
     , proto-lens-runtime
 
 library

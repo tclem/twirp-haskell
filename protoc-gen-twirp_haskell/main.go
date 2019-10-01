@@ -115,7 +115,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 			if i == 0 {
 				sep = "  =   "
 			}
-			print(b, "%s \"%s\" :> ReqBody [Protobuf, JSONPB] %s :> Post '[Protobuf, JSONPB] %s", sep, n, in, out)
+			print(b, "%s \"%s\" :> ReqBody [Protobuf, JSON] %s :> Post '[Protobuf, JSON] %s", sep, n, in, out)
 		}
 
 	}
