@@ -71,6 +71,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import Twirp")
 	print(b, "")
 	print(b, "import Proto.%s", apiName)
+	print(b, "import Proto.%s_JSON()", apiName)
 	print(b, "")
 
 	comments, err := g.reg.FileComments(file)

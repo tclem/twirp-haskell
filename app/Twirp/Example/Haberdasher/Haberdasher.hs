@@ -6,6 +6,7 @@ import Servant
 import Twirp
 
 import Proto.Haberdasher
+import Proto.Haberdasher_JSON()
 
 --  This is an example set of twirp services.
 

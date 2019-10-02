@@ -48,15 +48,19 @@ library
   exposed-modules:
       Twirp
       Twirp.Middleware.Errors
+      Twirp.JSONPB
+      Twirp.JSONPB.Class
   other-modules:
       Paths_twirp
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
-      aeson
-    , base >=4.7 && <5
+      base >=4.7 && <5
+    , aeson
+    , attoparsec
     , bytestring
+    , base64-bytestring
     , deepseq
     , http-media
     , http-types
@@ -74,6 +78,7 @@ executable twirp-example
   other-modules:
       Proto.Haberdasher
       Proto.Haberdasher_Fields
+      Proto.Haberdasher_JSON
       Twirp.Example.Haberdasher.Haberdasher
       Paths_twirp
   hs-source-dirs:
