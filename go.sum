@@ -11,6 +11,8 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tclem/proto-lens-jsonpb v0.0.0-20191002182006-2b4cd579144e h1:M51EUsi743gQDnuxAmp/QpZ7ZXTTnz/Id8phzdDBHGc=
 github.com/tclem/proto-lens-jsonpb v0.0.0-20191002182006-2b4cd579144e/go.mod h1:htLmg29XlaMs85vgiuEjW8RQE0BpkfPGOx0f80yzdVs=
+github.com/tclem/proto-lens-jsonpb v0.0.0-20191002195440-e333e387cb21 h1:kqTXc8o0SXAuwKxTeD6kMPBER0CNVJF6MVvYaliDxBI=
+github.com/tclem/proto-lens-jsonpb v0.0.0-20191002195440-e333e387cb21/go.mod h1:htLmg29XlaMs85vgiuEjW8RQE0BpkfPGOx0f80yzdVs=
 github.com/twitchtv/protogen v0.1.0 h1:x1CB37xjXLJRL97rOYVVqlNot0f9GVYQ4PRlbDEB58U=
 github.com/twitchtv/protogen v0.1.0/go.mod h1:jNxPwuzmhx8IkYq4Z5Qx6PWty1cQZZW9UV7kMhMvb+E=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
