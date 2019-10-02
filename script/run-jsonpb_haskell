@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd "$(dirname "$0")/.."
+
+go run protoc-gen-jsonpb_haskell/main.go protoc-gen-jsonpb_haskell/version.go
