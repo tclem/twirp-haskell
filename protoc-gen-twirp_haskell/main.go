@@ -16,12 +16,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	// "unicode"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/tclem/twirp-haskell/pkg/gen/haskell"
 	"github.com/twitchtv/protogen/typemap"
 )
 
@@ -184,29 +181,14 @@ func toModuleName(file *descriptor.FileDescriptorProto) string {
 	pkgName := file.GetPackage()
 
 	parts := []string{}
-	haskellPackage := haskell.GetHaskellPackageOption(file)
-	if haskellPackage != "" {
-		parts = strings.Split(haskellPackage, ".")
-	} else {
-		for _, p := range strings.Split(pkgName, ".") {
-			parts = append(parts, capitalize(p))
-		}
+	for _, p := range strings.Split(pkgName, ".") {
+		parts = append(parts, capitalize(p))
 	}
 
 	apiName := packageType(filePath(file))
 	parts = append(parts, apiName)
 
 	return strings.Join(parts, ".")
-}
-
-func getHaskellPackageOption(file *descriptor.FileDescriptorProto) string {
-	ex, _ := proto.GetExtension(file.Options, haskell.E_HaskellPackage)
-
-	if ex != nil {
-		asString := *ex.(*string)
-		return asString
-	}
-	return ""
 }
 
 // capitalize, with exceptions for common abbreviations

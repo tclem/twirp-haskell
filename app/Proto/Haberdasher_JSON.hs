@@ -10,7 +10,7 @@ import           Control.Monad (msum)
 import           Data.ProtoLens (defMessage)
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Encoding as E
-import           Twirp.JSONPB as JSONPB
+import           Data.ProtoLens.JSONPB as JSONPB
 import qualified Data.Text as T
 
 import           Proto.Haberdasher as P

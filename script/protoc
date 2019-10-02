@@ -6,13 +6,10 @@
 set -e
 cd "$(dirname "$0")/.."
 
-# Compile haskell.proto (extensions to protoc)
-protoc --proto_path=./pkg/gen/haskell \
-  --go_out=./pkg/gen/haskell \
-  haskell.proto
-
 protoc -I=. --proto_path=./proto \
   --plugin=protoc-gen-haskell=`which proto-lens-protoc` --haskell_out=./app \
-  --plugin=protoc-gen-jsonpb_haskell=./script/run-jsonpb_haskell --jsonpb_haskell_out=./app \
+  --jsonpb_haskell_out=./app \
   --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./app/Twirp/Example/Haberdasher \
   haberdasher.proto
+
+  # --plugin=protoc-gen-jsonpb_haskell=../ --jsonpb_haskell_out=./app \
