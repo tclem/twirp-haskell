@@ -13,19 +13,20 @@ An example, end-to-end application is included in `app`.
 
 ## Requirements
 
-1. Install `protoc`
+1. Install `protoc` (e.g., `brew install protoc`)
 2. Install the required protoc plugins:
-   - `stack install proto-lens-protoc`
+   - `cabal install proto-lens-protoc`
    - `go get github.com/tclem/twirp-haskell/protoc-gen-twirp_haskell`
+   - `go get github.com/tclem/proto-lens-jsonpb/protoc-gen-jsonpb_haskell`
 
 ## Usage
 
 Use the protoc plugin to generate a twirp service and associated protobuf types from a proto file.
 
 ```
-$ protoc -I=. --proto_path=./proto \
+protoc -I=. --proto_path=./proto \
   --plugin=protoc-gen-haskell=`which proto-lens-protoc` --haskell_out=./app \
-  --plugin=protoc-gen-jsonpb_haskell=./script/run-jsonpb_haskell --jsonpb_haskell_out=./app \
+  --jsonpb_haskell_out=./app \
   --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./app/Twirp/Example/Haberdasher \
   haberdasher.proto
 ```
