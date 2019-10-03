@@ -60,8 +60,6 @@ library
   exposed-modules:
       Twirp
       Twirp.Middleware.Errors
-      Twirp.JSONPB
-      Twirp.JSONPB.Class
   other-modules:
       Paths_twirp
   hs-source-dirs:
