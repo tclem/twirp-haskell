@@ -16,12 +16,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	// "unicode"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
-	"github.com/tclem/twirp-haskell/pkg/gen/haskell"
 	"github.com/twitchtv/protogen/typemap"
 )
 
@@ -61,6 +58,7 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "{-# LANGUAGE TypeOperators #-}")
 
 	pkgName := file.GetPackage()
+	apiName := packageType(filePath(file))
 	moduleName := toModuleName(file)
 
 	print(b, "module %s where", moduleName)
@@ -69,7 +67,8 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import Servant")
 	print(b, "import Twirp")
 	print(b, "")
-	print(b, "import %sPB", moduleName)
+	print(b, "import Proto.%s", apiName)
+	print(b, "import Proto.%s_JSON()", apiName)
 	print(b, "")
 
 	comments, err := g.reg.FileComments(file)
@@ -86,7 +85,6 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 		services = append(services, fmt.Sprintf("\"twirp\" :> \"%s.%s\" :> %sService", pkgName, n, n))
 	}
 	apis := strings.Join(services, "\n  :<|> ")
-	apiName := packageType(filePath(file))
 
 	print(b, "type %sAPI\n  =    %s", apiName, apis)
 
@@ -183,29 +181,14 @@ func toModuleName(file *descriptor.FileDescriptorProto) string {
 	pkgName := file.GetPackage()
 
 	parts := []string{}
-	haskellPackage := haskell.GetHaskellPackageOption(file)
-	if haskellPackage != "" {
-		parts = strings.Split(haskellPackage, ".")
-	} else {
-		for _, p := range strings.Split(pkgName, ".") {
-			parts = append(parts, capitalize(p))
-		}
+	for _, p := range strings.Split(pkgName, ".") {
+		parts = append(parts, capitalize(p))
 	}
 
 	apiName := packageType(filePath(file))
 	parts = append(parts, apiName)
 
 	return strings.Join(parts, ".")
-}
-
-func getHaskellPackageOption(file *descriptor.FileDescriptorProto) string {
-	ex, _ := proto.GetExtension(file.Options, haskell.E_HaskellPackage)
-
-	if ex != nil {
-		asString := *ex.(*string)
-		return asString
-	}
-	return ""
 }
 
 // capitalize, with exceptions for common abbreviations

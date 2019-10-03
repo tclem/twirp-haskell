@@ -1,5 +1,5 @@
-.stack-work/
+.DS_Store
+/dist*
+/hie.yaml
 *~
 *.pyc
-vendor/
-app/Twirp/Example/*.hs

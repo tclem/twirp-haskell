@@ -1,0 +1,14 @@
+#!/bin/bash
+#/ Usage: script/protoc
+#/
+#/ Generate from Haskell code from .proto files.
+
+set -e
+cd "$(dirname "$0")/.."
+
+# Generate a python client
+PYTHON_CLIENT_PATH=./clients/python/haberdasher
+protoc --proto_path=./proto \
+  --python_out="$PYTHON_CLIENT_PATH" \
+  --twirp_python_out="$PYTHON_CLIENT_PATH" \
+  ./proto/haberdasher.proto

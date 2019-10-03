@@ -5,7 +5,8 @@ module Twirp.Example.Haberdasher.Haberdasher where
 import Servant
 import Twirp
 
-import Twirp.Example.Haberdasher.HaberdasherPB
+import Proto.Haberdasher
+import Proto.Haberdasher_JSON()
 
 --  This is an example set of twirp services.
 
