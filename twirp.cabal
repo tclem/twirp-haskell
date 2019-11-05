@@ -11,6 +11,7 @@ license-file:   LICENSE
 author:         Timothy Clem
 maintainer:     timothy.clem@gmail.com
 copyright:      2019 Timothy Clem
+category:       Web
 build-type:     Simple
 extra-source-files: README.md
 
@@ -60,8 +61,6 @@ library
   exposed-modules:
       Twirp
       Twirp.Middleware.Errors
-  other-modules:
-      Paths_twirp
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
@@ -76,7 +75,6 @@ executable twirp-example
       Proto.Haberdasher_Fields
       Proto.Haberdasher_JSON
       Twirp.Example.Haberdasher.Haberdasher
-      Paths_twirp
   hs-source-dirs:
       app
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
@@ -87,8 +85,6 @@ test-suite twirp-test
   import: haskell, dependencies
   type: exitcode-stdio-1.0
   main-is: Spec.hs
-  other-modules:
-      Paths_twirp
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
