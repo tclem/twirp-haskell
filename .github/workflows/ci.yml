@@ -42,4 +42,5 @@ jobs:
     - name: Build & test
       run: |
         cabal v2-build
+        cabal v2-build example
         cabal v2-haddock
