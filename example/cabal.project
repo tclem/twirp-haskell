@@ -1,6 +1,4 @@
-packages: . example
-
-jobs: $ncpus
+packages: .
 
 source-repository-package
   type: git
