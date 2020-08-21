@@ -16,6 +16,8 @@ build-type:     Simple
 extra-source-files: README.md
 
 tested-with:    GHC == 8.6.5
+              , GHC == 8.8.1
+              , GHC == 8.10.1
 
 -- GHC extensions shared between targets
 common haskell
