@@ -1,7 +1,7 @@
 cabal-version:  2.4
 
 name:           twirp
-version:        0.2.0.0
+version:        0.2.0.1
 synopsis:       Haskell twirp foundations
 description:    Please see the README on GitHub at <https://github.com/tclem/twirp-haskell#readme>
 homepage:       https://github.com/tclem/twirp-haskell#readme
@@ -16,6 +16,8 @@ build-type:     Simple
 extra-source-files: README.md
 
 tested-with:    GHC == 8.6.5
+              , GHC == 8.8.1
+              , GHC == 8.10.1
 
 -- GHC extensions shared between targets
 common haskell
@@ -43,10 +45,10 @@ common dependencies
     , http-media >= 0.8.0.0
     , http-types >= 0.12.3
     , proto-lens >= 0.5.0.0
-    , proto-lens-jsonpb >= 0.2.0.0
-    , proto-lens-runtime >= 0.5 && <0.7
-    , servant ^>= 0.16.2
-    , text ^>= 1.2.4.0
+    , proto-lens-jsonpb >= 0.2.0.2
+    , proto-lens-runtime ^>= 0.7
+    , servant ^>= 0.18
+    , text ^>= 1.2.3.2
     , wai ^>= 3.2.2.1
 
 library
