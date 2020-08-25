@@ -1,6 +1,1 @@
 packages: .
-
-source-repository-package
-  type: git
-  location: https://github.com/tclem/proto-lens-jsonpb
-  tag: ce102da9fd7f7b405df414ee571aa12ee60c85bd
