@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia, DeriveAnyClass, ScopedTypeVariables, ViewPatterns #-}
+-- | Middlewares for handling Twirp error responses.
 module Twirp.Middleware.Errors where
 
 import Data.Aeson
@@ -8,13 +9,14 @@ import Network.Wai
 
 import qualified Data.ByteString as BS
 
+-- | A Twirp error that will be sent as a JSON-encoded response body.
+-- See: https://github.com/twitchtv/twirp/blob/master/docs/errors.md
 data TwirpError = TwirpError { code :: String, msg :: String }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON)
 
 -- | Rewrite error responses to use Twirp's error codes and JSON encoding
 -- when they don't already fit that model.
--- See: https://github.com/twitchtv/twirp/blob/master/docs/errors.md
 twirpErrorResponses :: Middleware
 twirpErrorResponses = modifyResponse $ \response ->
   if nonTwirpError response then
