@@ -13,7 +13,7 @@ import qualified Data.ByteString as BS
 -- See: https://github.com/twitchtv/twirp/blob/master/docs/errors.md
 data TwirpError = TwirpError { code :: String, msg :: String }
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass (FromJSON, ToJSON)
 
 -- | Rewrite error responses to use Twirp's error codes and JSON encoding
 -- when they don't already fit that model.
