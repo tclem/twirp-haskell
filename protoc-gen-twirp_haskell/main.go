@@ -68,6 +68,10 @@ func (g *generator) generateHaskellCode(file *descriptor.FileDescriptorProto) st
 	print(b, "import Servant")
 	print(b, "import Twirp")
 	print(b, "")
+	for _, dep := range file.Dependency {
+		print(b, "import Proto.%s", packageType(dep))
+		print(b, "import Proto.%s_JSON()", packageType(dep))
+	}
 	print(b, "import Proto.%s", apiName)
 	print(b, "import Proto.%s_JSON()", apiName)
 	print(b, "")
