@@ -2,17 +2,17 @@
 #/ Usage: script/protoc
 #/
 #/ Generate from Haskell code from .proto files.
-# You might need to install the various protoc tooling
 #
-# brew install protoc
-# cabal install proto-lens-protoc
-# go get github.com/tclem/proto-lens-jsonpb/protoc-gen-jsonpb_haskell@master
+# You might need to install the various protoc tooling. E.g.:
+#   brew install protobuf
+#   cabal install proto-lens-protoc
+#   go get github.com/tclem/proto-lens-jsonpb/protoc-gen-jsonpb_haskell@master
 
 set -e
 cd "$(dirname "$0")/.."
 
 protoc -I=. --proto_path=./proto \
-  --plugin=protoc-gen-haskell=`which proto-lens-protoc` --haskell_out=./app \
-  --jsonpb_haskell_out=./app \
-  --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./app/Twirp/Example/Haberdasher \
+  --plugin=protoc-gen-haskell=`which proto-lens-protoc` --haskell_out=./example/app \
+  --jsonpb_haskell_out=./example/app \
+  --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./example/app/Twirp/Example/Haberdasher \
   haberdasher.proto
