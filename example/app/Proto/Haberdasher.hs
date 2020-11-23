@@ -7,7 +7,6 @@
 {-# OPTIONS_GHC -fno-warn-unused-imports#-}
 {-# OPTIONS_GHC -fno-warn-duplicate-exports#-}
 module Proto.Haberdasher
-       (Haberdasher(..), Health(..), Bill(), Bill'Extra(..),
         _Bill'VatInfo, _Bill'ZipCode, Bill'BillingStatus(..),
         Bill'BillingStatus(), Bill'BillingStatus'UnrecognizedValue,
         EmptyMessage(), FieldTestMessage(), Hat(), Ping(), Pong(),
