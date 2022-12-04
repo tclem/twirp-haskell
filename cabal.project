@@ -1,3 +1,5 @@
 packages: . example
 
+allow-newer: proto-lens-jsonpb:text
+
 jobs: $ncpus
