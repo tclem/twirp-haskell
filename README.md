@@ -25,9 +25,11 @@ Use the protoc plugin to generate a twirp service and associated protobuf types 
 
 ```
 protoc -I=. --proto_path=./proto \
-  --plugin=protoc-gen-haskell=`which proto-lens-protoc` --haskell_out=./app \
+  --plugin=protoc-gen-haskell=`which proto-lens-protoc`
+  --haskell_out=./app \
   --jsonpb_haskell_out=./app \
-  --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell --twirp_haskell_out=./app/Twirp/Example/Haberdasher \
+  --plugin=protoc-gen-twirp_haskell=./script/run-twirp_haskell
+  --twirp_haskell_out=./app/Twirp/Example/Haberdasher \
   haberdasher.proto
 ```
 

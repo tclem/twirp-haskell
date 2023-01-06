@@ -281,8 +281,7 @@ instance Data.ProtoLens.Message Bill where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"status") _x
@@ -295,8 +294,7 @@ instance Data.ProtoLens.Message Bill where
                          ((Prelude..)
                             ((Prelude..)
                                Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                            Prelude.fromEnum
-                            _v))
+                            Prelude.fromEnum _v))
                 ((Data.Monoid.<>)
                    (case
                         Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'extra") _x
@@ -311,8 +309,7 @@ instance Data.ProtoLens.Message Bill where
                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
                                            (Prelude.fromIntegral (Data.ByteString.length bs)))
                                         (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                Data.Text.Encoding.encodeUtf8
-                                v)
+                                Data.Text.Encoding.encodeUtf8 v)
                       (Prelude.Just (Bill'ZipCode v))
                         -> (Data.Monoid.<>)
                              (Data.ProtoLens.Encoding.Bytes.putVarInt 34)
@@ -322,8 +319,7 @@ instance Data.ProtoLens.Message Bill where
                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
                                            (Prelude.fromIntegral (Data.ByteString.length bs)))
                                         (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                Data.Text.Encoding.encodeUtf8
-                                v))
+                                Data.Text.Encoding.encodeUtf8 v))
                    (Data.ProtoLens.Encoding.Wire.buildFieldSet
                       (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData Bill where
@@ -391,8 +387,7 @@ instance Prelude.Enum Bill'BillingStatus where
            ((Prelude.++)
               "toEnum: unknown value for enum BillingStatus: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum Bill'UN_PAID = 0
   fromEnum Bill'PAID = 1
   fromEnum
@@ -466,13 +461,13 @@ instance Data.ProtoLens.Message EmptyMessage where
                            Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
-                      case tag of {
+                      case tag of
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
                                 loop
                                   (Lens.Family2.over
-                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x) }
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do loop Data.ProtoLens.defMessage) "EmptyMessage"
@@ -771,8 +766,7 @@ instance Data.ProtoLens.Message Hat where
                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                            Data.Text.Encoding.encodeUtf8
-                            _v))
+                            Data.Text.Encoding.encodeUtf8 _v))
                 ((Data.Monoid.<>)
                    (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"name") _x
                     in
@@ -787,8 +781,7 @@ instance Data.ProtoLens.Message Hat where
                                        (Data.ProtoLens.Encoding.Bytes.putVarInt
                                           (Prelude.fromIntegral (Data.ByteString.length bs)))
                                        (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                               Data.Text.Encoding.encodeUtf8
-                               _v))
+                               Data.Text.Encoding.encodeUtf8 _v))
                    (Data.ProtoLens.Encoding.Wire.buildFieldSet
                       (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData Hat where
@@ -906,8 +899,7 @@ instance Data.ProtoLens.Message Ping where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData Ping where
@@ -1135,8 +1127,7 @@ instance Data.ProtoLens.Message Pong where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'stuff") frozen'stuff x))
                else
@@ -1242,8 +1233,7 @@ instance Data.ProtoLens.Message Pong where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (Data.ProtoLens.Encoding.Bytes.foldMapBuilder
                    (\ _v
@@ -1255,8 +1245,7 @@ instance Data.ProtoLens.Message Pong where
                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                              Data.ProtoLens.encodeMessage
-                              _v))
+                              Data.ProtoLens.encodeMessage _v))
                    (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'stuff") _x))
                 ((Data.Monoid.<>)
                    (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"id") _x
@@ -1283,8 +1272,7 @@ instance Data.ProtoLens.Message Pong where
                                           (Data.ProtoLens.Encoding.Bytes.putVarInt
                                              (Prelude.fromIntegral (Data.ByteString.length bs)))
                                           (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                  Data.Text.Encoding.encodeUtf8
-                                  _v))
+                                  Data.Text.Encoding.encodeUtf8 _v))
                       ((Data.Monoid.<>)
                          (case
                               Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'extra") _x
@@ -1294,8 +1282,7 @@ instance Data.ProtoLens.Message Pong where
                               -> (Data.Monoid.<>)
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
                                    ((Prelude..)
-                                      Data.ProtoLens.Encoding.Bytes.putVarInt
-                                      Prelude.fromIntegral
+                                      Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                       v)
                             (Prelude.Just (Pong'U v))
                               -> (Data.Monoid.<>)
@@ -1306,8 +1293,7 @@ instance Data.ProtoLens.Message Pong where
                                               (Data.ProtoLens.Encoding.Bytes.putVarInt
                                                  (Prelude.fromIntegral (Data.ByteString.length bs)))
                                               (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                      Data.Text.Encoding.encodeUtf8
-                                      v))
+                                      Data.Text.Encoding.encodeUtf8 v))
                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
                             (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))
 instance Control.DeepSeq.NFData Pong where
@@ -1702,11 +1688,9 @@ instance Data.ProtoLens.Message Test where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'altPrices")
-                              frozen'altPrices
+                              (Data.ProtoLens.Field.field @"vec'altPrices") frozen'altPrices
                               (Lens.Family2.set
                                  (Data.ProtoLens.Field.field @"vec'items") frozen'items x)))
                else
@@ -1758,8 +1742,7 @@ instance Data.ProtoLens.Message Test where
                                 loop
                                   (Lens.Family2.over
                                      Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
-                                  mutable'altPrices
-                                  mutable'items
+                                  mutable'altPrices mutable'items
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do mutable'altPrices <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
@@ -1800,8 +1783,7 @@ instance Data.ProtoLens.Message Test where
                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                              Data.ProtoLens.encodeMessage
-                              _v))
+                              Data.ProtoLens.encodeMessage _v))
                    (Lens.Family2.view
                       (Data.ProtoLens.Field.field @"vec'altPrices") _x))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
@@ -1819,6 +1801,11 @@ instance Data.ProtoLens.Service.Types.Service Haberdasher where
   type ServiceName Haberdasher = "Haberdasher"
   type ServicePackage Haberdasher = "twirp.example.haberdasher"
   type ServiceMethods Haberdasher = '["getBill", "makeHat"]
+  packedServiceDescriptor _
+    = "\n\
+      \\vHaberdasher\DC2J\n\
+      \\aMakeHat\DC2\US.twirp.example.haberdasher.Size\SUB\RS.twirp.example.haberdasher.Hat\DC2J\n\
+      \\aGetBill\DC2\RS.twirp.example.haberdasher.Hat\SUB\US.twirp.example.haberdasher.Bill"
 instance Data.ProtoLens.Service.Types.HasMethodImpl Haberdasher "makeHat" where
   type MethodName Haberdasher "makeHat" = "MakeHat"
   type MethodInput Haberdasher "makeHat" = Size
@@ -1834,6 +1821,10 @@ instance Data.ProtoLens.Service.Types.Service Health where
   type ServiceName Health = "Health"
   type ServicePackage Health = "twirp.example.haberdasher"
   type ServiceMethods Health = '["check"]
+  packedServiceDescriptor _
+    = "\n\
+      \\ACKHealth\DC2I\n\
+      \\ENQCheck\DC2\US.twirp.example.haberdasher.Ping\SUB\US.twirp.example.haberdasher.Pong"
 instance Data.ProtoLens.Service.Types.HasMethodImpl Health "check" where
   type MethodName Health "check" = "Check"
   type MethodInput Health "check" = Ping
